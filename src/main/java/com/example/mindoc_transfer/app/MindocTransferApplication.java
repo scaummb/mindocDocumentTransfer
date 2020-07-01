@@ -1,4 +1,4 @@
-package com.example.mindoc_transfer;
+package com.example.mindoc_transfer.app;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
