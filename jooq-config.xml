@@ -39,10 +39,11 @@
             </excludes>
         </database>
         <target>
-            <!-- 路径，项目固定都是 src/main/java -->
-            <directory>src/main/java</directory>
-            <!-- 包名，这个不同项目都要根据具体文件结构进行修改 -->
+            <!-- The destination package of your generated classes (within the destination directory) -->
             <packageName>com.example.mindoc_transfer.db.pojo</packageName>
+            <!-- The destination directory of your generated classes -->
+            <!-- code generation will be run under the project root using maven, it is then relative to where POM file locates -->
+            <directory>src/main/java</directory>
         </target>
     </generator>
 
