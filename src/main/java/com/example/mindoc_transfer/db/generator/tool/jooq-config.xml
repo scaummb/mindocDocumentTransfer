@@ -3,9 +3,9 @@
     <!-- Configure the database connection here -->
     <jdbc>
         <driver>com.mysql.jdbc.Driver</driver>
-        <url>jdbc:mysql://120.79.41.249:3306/eh_short_url</url>
+        <url>jdbc:mysql://localhost:3306/mindoc_db</url>
         <user>root</user>
-        <password>123456</password>
+        <password>qweasd!@#zxc123</password>
     </jdbc>
 
     <generator>
@@ -22,7 +22,7 @@
 
             <!-- The database schema (or in the absence of schema support, in your RDBMS this
                 can be the owner, user, database name) to be generated -->
-            <inputSchema>eh_short_url</inputSchema>
+            <inputSchema>mindoc_db</inputSchema>
             <!-- All elements that are generated from your schema
                 (A Java regular expression. Use the pipe to separate several expressions)
                 Watch out for case-sensitivity. Depending on your database, this might be important! -->
@@ -40,7 +40,7 @@
         </database>
         <target>
             <!-- The destination package of your generated classes (within the destination directory) -->
-            <packageName>com.db.pojo</packageName>
+            <packageName>com.example.mindoc_transfer.db.pojo</packageName>
             <!-- The destination directory of your generated classes -->
             <!-- code generation will be run under the project root using maven, it is then relative to where POM file locates -->
             <directory>src/main/java</directory>
