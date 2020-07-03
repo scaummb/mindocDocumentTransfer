@@ -106,3 +106,19 @@ CREATE TABLE `opc_help_center_folders_structures` (
   KEY `i_eh_folder_parentid_identify` (`parent_id`,`identify`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='帮助中心：帮助中心目录结构表';
 
+
+-- 新增附件表
+CREATE TABLE `opc_help_center_attachments` (
+  `id` int(11) NOT NULL COMMENT 'id of attachment',
+  `folder_structure_id` bigint(20) NOT NULL COMMENT '目录结构叶子节点id，id of the opc_help_center_folders_structures',
+  `file_structure_id` int(11) DEFAULT NULL COMMENT '章节节点id，id of the opc_help_center_files_structures',
+  `file_url` varchar(2000) NOT NULL DEFAULT '' COMMENT 'cententServer文本下载路径',
+  `file_name` varchar(255) NOT NULL DEFAULT '',
+  `file_path` varchar(2000) NOT NULL DEFAULT '',
+  `file_size` double NOT NULL DEFAULT '0',
+  `http_path` varchar(2000) NOT NULL DEFAULT '',
+  `file_ext` varchar(50) NOT NULL DEFAULT '',
+  `create_time` datetime NOT NULL,
+  `create_at` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;

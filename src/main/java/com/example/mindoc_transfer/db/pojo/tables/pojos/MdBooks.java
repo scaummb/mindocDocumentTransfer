@@ -4,10 +4,9 @@
 package com.example.mindoc_transfer.db.pojo.tables.pojos;
 
 
+import javax.annotation.Generated;
 import java.io.Serializable;
 import java.sql.Timestamp;
-
-import javax.annotation.Generated;
 
 
 /**
@@ -265,7 +264,7 @@ public class MdBooks implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("MdBooks (");
+        StringBuilder sb = new StringBuilder("MindocBooks (");
 
         sb.append(bookId);
         sb.append(", ").append(bookName);

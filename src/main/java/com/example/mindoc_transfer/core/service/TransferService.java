@@ -5,7 +5,7 @@ import com.example.mindoc_transfer.core.controller.TransferResponse;
 
 /**
  * @author moubin.mo
- * @date: 2020/7/1 11:20
+ * @date: 2020/7/3 10:17
  */
 
 public interface TransferService {

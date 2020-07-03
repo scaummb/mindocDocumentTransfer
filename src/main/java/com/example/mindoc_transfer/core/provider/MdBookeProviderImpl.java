@@ -4,9 +4,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author moubin.mo
- * @date: 2020/7/1 11:22
+ * @date: 2020/7/3 10:16
  */
 @Component
-public class TransferProviderImpl implements TransferProvider {
-
+public class MdBookeProviderImpl implements MdBookProvider{
 }
