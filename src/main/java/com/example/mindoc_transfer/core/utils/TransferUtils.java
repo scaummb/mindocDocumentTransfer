@@ -13,4 +13,7 @@ public class TransferUtils {
 		return null;
 	}
 
+	public static String uploadAttachMents(File file){
+		return null;
+	}
 }

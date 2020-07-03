@@ -15,6 +15,7 @@ import com.example.mindoc_transfer.db.pojo.tables.MdMembers;
 import com.example.mindoc_transfer.db.pojo.tables.MdMigrations;
 import com.example.mindoc_transfer.db.pojo.tables.MdOptions;
 import com.example.mindoc_transfer.db.pojo.tables.MdRelationship;
+import com.example.mindoc_transfer.db.pojo.tables.OpcHelpCenterAttachments;
 import com.example.mindoc_transfer.db.pojo.tables.OpcHelpCenterFilesStructures;
 import com.example.mindoc_transfer.db.pojo.tables.OpcHelpCenterFoldersStructures;
 import com.example.mindoc_transfer.db.pojo.tables.records.MdAttachmentRecord;
@@ -28,6 +29,7 @@ import com.example.mindoc_transfer.db.pojo.tables.records.MdMembersRecord;
 import com.example.mindoc_transfer.db.pojo.tables.records.MdMigrationsRecord;
 import com.example.mindoc_transfer.db.pojo.tables.records.MdOptionsRecord;
 import com.example.mindoc_transfer.db.pojo.tables.records.MdRelationshipRecord;
+import com.example.mindoc_transfer.db.pojo.tables.records.OpcHelpCenterAttachmentsRecord;
 import com.example.mindoc_transfer.db.pojo.tables.records.OpcHelpCenterFilesStructuresRecord;
 import com.example.mindoc_transfer.db.pojo.tables.records.OpcHelpCenterFoldersStructuresRecord;
 
@@ -90,6 +92,7 @@ public class Keys {
     public static final UniqueKey<MdOptionsRecord> KEY_MD_OPTIONS_OPTION_NAME = UniqueKeys0.KEY_MD_OPTIONS_OPTION_NAME;
     public static final UniqueKey<MdRelationshipRecord> KEY_MD_RELATIONSHIP_PRIMARY = UniqueKeys0.KEY_MD_RELATIONSHIP_PRIMARY;
     public static final UniqueKey<MdRelationshipRecord> KEY_MD_RELATIONSHIP_MEMBER_ID = UniqueKeys0.KEY_MD_RELATIONSHIP_MEMBER_ID;
+    public static final UniqueKey<OpcHelpCenterAttachmentsRecord> KEY_OPC_HELP_CENTER_ATTACHMENTS_PRIMARY = UniqueKeys0.KEY_OPC_HELP_CENTER_ATTACHMENTS_PRIMARY;
     public static final UniqueKey<OpcHelpCenterFilesStructuresRecord> KEY_OPC_HELP_CENTER_FILES_STRUCTURES_PRIMARY = UniqueKeys0.KEY_OPC_HELP_CENTER_FILES_STRUCTURES_PRIMARY;
     public static final UniqueKey<OpcHelpCenterFoldersStructuresRecord> KEY_OPC_HELP_CENTER_FOLDERS_STRUCTURES_PRIMARY = UniqueKeys0.KEY_OPC_HELP_CENTER_FOLDERS_STRUCTURES_PRIMARY;
 
@@ -135,6 +138,7 @@ public class Keys {
         public static final UniqueKey<MdOptionsRecord> KEY_MD_OPTIONS_OPTION_NAME = createUniqueKey(MdOptions.MD_OPTIONS, "KEY_md_options_option_name", MdOptions.MD_OPTIONS.OPTION_NAME);
         public static final UniqueKey<MdRelationshipRecord> KEY_MD_RELATIONSHIP_PRIMARY = createUniqueKey(MdRelationship.MD_RELATIONSHIP, "KEY_md_relationship_PRIMARY", MdRelationship.MD_RELATIONSHIP.RELATIONSHIP_ID);
         public static final UniqueKey<MdRelationshipRecord> KEY_MD_RELATIONSHIP_MEMBER_ID = createUniqueKey(MdRelationship.MD_RELATIONSHIP, "KEY_md_relationship_member_id", MdRelationship.MD_RELATIONSHIP.MEMBER_ID, MdRelationship.MD_RELATIONSHIP.BOOK_ID);
+        public static final UniqueKey<OpcHelpCenterAttachmentsRecord> KEY_OPC_HELP_CENTER_ATTACHMENTS_PRIMARY = createUniqueKey(OpcHelpCenterAttachments.OPC_HELP_CENTER_ATTACHMENTS, "KEY_opc_help_center_attachments_PRIMARY", OpcHelpCenterAttachments.OPC_HELP_CENTER_ATTACHMENTS.ID);
         public static final UniqueKey<OpcHelpCenterFilesStructuresRecord> KEY_OPC_HELP_CENTER_FILES_STRUCTURES_PRIMARY = createUniqueKey(OpcHelpCenterFilesStructures.OPC_HELP_CENTER_FILES_STRUCTURES, "KEY_opc_help_center_files_structures_PRIMARY", OpcHelpCenterFilesStructures.OPC_HELP_CENTER_FILES_STRUCTURES.ID);
         public static final UniqueKey<OpcHelpCenterFoldersStructuresRecord> KEY_OPC_HELP_CENTER_FOLDERS_STRUCTURES_PRIMARY = createUniqueKey(OpcHelpCenterFoldersStructures.OPC_HELP_CENTER_FOLDERS_STRUCTURES, "KEY_opc_help_center_folders_structures_PRIMARY", OpcHelpCenterFoldersStructures.OPC_HELP_CENTER_FOLDERS_STRUCTURES.ID);
     }

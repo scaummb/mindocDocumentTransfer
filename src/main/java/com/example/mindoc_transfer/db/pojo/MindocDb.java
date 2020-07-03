@@ -15,6 +15,7 @@ import com.example.mindoc_transfer.db.pojo.tables.MdMembers;
 import com.example.mindoc_transfer.db.pojo.tables.MdMigrations;
 import com.example.mindoc_transfer.db.pojo.tables.MdOptions;
 import com.example.mindoc_transfer.db.pojo.tables.MdRelationship;
+import com.example.mindoc_transfer.db.pojo.tables.OpcHelpCenterAttachments;
 import com.example.mindoc_transfer.db.pojo.tables.OpcHelpCenterFilesStructures;
 import com.example.mindoc_transfer.db.pojo.tables.OpcHelpCenterFoldersStructures;
 
@@ -42,7 +43,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class MindocDb extends SchemaImpl {
 
-    private static final long serialVersionUID = 1794098775;
+    private static final long serialVersionUID = -562551409;
 
     /**
      * The reference instance of <code>mindoc_db</code>
@@ -105,6 +106,11 @@ public class MindocDb extends SchemaImpl {
     public final MdRelationship MD_RELATIONSHIP = com.example.mindoc_transfer.db.pojo.tables.MdRelationship.MD_RELATIONSHIP;
 
     /**
+     * The table <code>mindoc_db.opc_help_center_attachments</code>.
+     */
+    public final OpcHelpCenterAttachments OPC_HELP_CENTER_ATTACHMENTS = com.example.mindoc_transfer.db.pojo.tables.OpcHelpCenterAttachments.OPC_HELP_CENTER_ATTACHMENTS;
+
+    /**
      * 帮助中心：文档数据表
      */
     public final OpcHelpCenterFilesStructures OPC_HELP_CENTER_FILES_STRUCTURES = com.example.mindoc_transfer.db.pojo.tables.OpcHelpCenterFilesStructures.OPC_HELP_CENTER_FILES_STRUCTURES;
@@ -150,6 +156,7 @@ public class MindocDb extends SchemaImpl {
             MdMigrations.MD_MIGRATIONS,
             MdOptions.MD_OPTIONS,
             MdRelationship.MD_RELATIONSHIP,
+            OpcHelpCenterAttachments.OPC_HELP_CENTER_ATTACHMENTS,
             OpcHelpCenterFilesStructures.OPC_HELP_CENTER_FILES_STRUCTURES,
             OpcHelpCenterFoldersStructures.OPC_HELP_CENTER_FOLDERS_STRUCTURES);
     }

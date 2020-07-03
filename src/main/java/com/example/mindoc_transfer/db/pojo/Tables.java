@@ -15,6 +15,7 @@ import com.example.mindoc_transfer.db.pojo.tables.MdMembers;
 import com.example.mindoc_transfer.db.pojo.tables.MdMigrations;
 import com.example.mindoc_transfer.db.pojo.tables.MdOptions;
 import com.example.mindoc_transfer.db.pojo.tables.MdRelationship;
+import com.example.mindoc_transfer.db.pojo.tables.OpcHelpCenterAttachments;
 import com.example.mindoc_transfer.db.pojo.tables.OpcHelpCenterFilesStructures;
 import com.example.mindoc_transfer.db.pojo.tables.OpcHelpCenterFoldersStructures;
 
@@ -88,6 +89,11 @@ public class Tables {
      * The table <code>mindoc_db.md_relationship</code>.
      */
     public static final MdRelationship MD_RELATIONSHIP = com.example.mindoc_transfer.db.pojo.tables.MdRelationship.MD_RELATIONSHIP;
+
+    /**
+     * The table <code>mindoc_db.opc_help_center_attachments</code>.
+     */
+    public static final OpcHelpCenterAttachments OPC_HELP_CENTER_ATTACHMENTS = com.example.mindoc_transfer.db.pojo.tables.OpcHelpCenterAttachments.OPC_HELP_CENTER_ATTACHMENTS;
 
     /**
      * 帮助中心：文档数据表

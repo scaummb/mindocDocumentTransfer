@@ -3,12 +3,13 @@ package com.example.mindoc_transfer.core.provider;
 import org.jooq.ContextTransactionalRunnable;
 import org.jooq.DSLContext;
 import org.jooq.TransactionalRunnable;
+import org.springframework.stereotype.Component;
 
 /**
  * @author moubin.mo
  * @date: 2020/7/3 11:51
  */
-
+@Component
 public class TxProviderImpl implements TxProvider {
 
 	private final DSLContext dslContext;
