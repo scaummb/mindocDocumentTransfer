@@ -9,4 +9,5 @@ import org.springframework.stereotype.Component;
  */
 @Component(HandlerConstants.PICTURES_HANDLER)
 public class PictureHandler implements BaseHandler {
+
 }
