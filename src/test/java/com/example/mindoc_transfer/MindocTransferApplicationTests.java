@@ -1,6 +1,5 @@
 package com.example.mindoc_transfer;
 
-import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,10 +12,6 @@ import java.util.regex.Pattern;
 class MindocTransferApplicationTests {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MindocTransferApplicationTests.class);
 
-	@Test
-	void contextLoads() {
-
-	}
 
 	public static void main(String[] args) {
 		String text = "帮助中心book\n" +

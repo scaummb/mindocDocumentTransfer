@@ -5,16 +5,14 @@ package com.example.mindoc_transfer.db.pojo.tables.records;
 
 
 import com.example.mindoc_transfer.db.pojo.tables.MdMembers;
-
-import java.sql.Timestamp;
-
-import javax.annotation.Generated;
-
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record13;
 import org.jooq.Row13;
 import org.jooq.impl.UpdatableRecordImpl;
+
+import javax.annotation.Generated;
+import java.sql.Timestamp;
 
 
 /**
@@ -590,6 +588,71 @@ public class MdMembersRecord extends UpdatableRecordImpl<MdMembersRecord> implem
         value12(value12);
         value13(value13);
         return this;
+    }
+
+    @Override
+    public Integer component1() {
+        return null;
+    }
+
+    @Override
+    public String component2() {
+        return null;
+    }
+
+    @Override
+    public String component3() {
+        return null;
+    }
+
+    @Override
+    public String component4() {
+        return null;
+    }
+
+    @Override
+    public String component5() {
+        return null;
+    }
+
+    @Override
+    public String component6() {
+        return null;
+    }
+
+    @Override
+    public String component7() {
+        return null;
+    }
+
+    @Override
+    public String component8() {
+        return null;
+    }
+
+    @Override
+    public Integer component9() {
+        return null;
+    }
+
+    @Override
+    public Integer component10() {
+        return null;
+    }
+
+    @Override
+    public Timestamp component11() {
+        return null;
+    }
+
+    @Override
+    public Integer component12() {
+        return null;
+    }
+
+    @Override
+    public Timestamp component13() {
+        return null;
     }
 
     // -------------------------------------------------------------------------

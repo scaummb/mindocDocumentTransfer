@@ -5,16 +5,14 @@ package com.example.mindoc_transfer.db.pojo.tables.records;
 
 
 import com.example.mindoc_transfer.db.pojo.tables.OpcHelpCenterFoldersStructures;
-
-import java.sql.Timestamp;
-
-import javax.annotation.Generated;
-
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record16;
 import org.jooq.Row16;
 import org.jooq.impl.UpdatableRecordImpl;
+
+import javax.annotation.Generated;
+import java.sql.Timestamp;
 
 
 /**
@@ -710,6 +708,86 @@ public class OpcHelpCenterFoldersStructuresRecord extends UpdatableRecordImpl<Op
         value15(value15);
         value16(value16);
         return this;
+    }
+
+    @Override
+    public Long component1() {
+        return null;
+    }
+
+    @Override
+    public Long component2() {
+        return null;
+    }
+
+    @Override
+    public String component3() {
+        return null;
+    }
+
+    @Override
+    public Integer component4() {
+        return null;
+    }
+
+    @Override
+    public String component5() {
+        return null;
+    }
+
+    @Override
+    public Byte component6() {
+        return null;
+    }
+
+    @Override
+    public Integer component7() {
+        return null;
+    }
+
+    @Override
+    public Byte component8() {
+        return null;
+    }
+
+    @Override
+    public String component9() {
+        return null;
+    }
+
+    @Override
+    public Long component10() {
+        return null;
+    }
+
+    @Override
+    public Integer component11() {
+        return null;
+    }
+
+    @Override
+    public Byte component12() {
+        return null;
+    }
+
+    @Override
+    public Timestamp component13() {
+        return null;
+    }
+
+    @Override
+    public Long component14() {
+        return null;
+    }
+
+    @Override
+    public Timestamp component15() {
+        return null;
+    }
+
+    @Override
+    public Long component16() {
+        return null;
     }
 
     // -------------------------------------------------------------------------

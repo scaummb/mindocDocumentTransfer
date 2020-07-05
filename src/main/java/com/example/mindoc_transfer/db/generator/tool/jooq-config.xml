@@ -4,7 +4,7 @@
     <jdbc>
         <driver>com.mysql.jdbc.Driver</driver>
         <url>jdbc:mysql://localhost:3306/mindoc_db</url>
-        <user>root</user>
+        <userLogon>root</userLogon>
         <password>qweasd!@#zxc123</password>
     </jdbc>
 
@@ -21,7 +21,7 @@
             <name>org.jooq.util.mysql.MySQLDatabase</name>
 
             <!-- The database schema (or in the absence of schema support, in your RDBMS this
-                can be the owner, user, database name) to be generated -->
+                can be the owner, userLogon, database name) to be generated -->
             <inputSchema>mindoc_db</inputSchema>
             <!-- All elements that are generated from your schema
                 (A Java regular expression. Use the pipe to separate several expressions)

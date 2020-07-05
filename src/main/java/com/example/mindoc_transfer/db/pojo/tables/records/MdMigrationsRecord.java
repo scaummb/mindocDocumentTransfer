@@ -5,16 +5,14 @@ package com.example.mindoc_transfer.db.pojo.tables.records;
 
 
 import com.example.mindoc_transfer.db.pojo.tables.MdMigrations;
-
-import java.sql.Timestamp;
-
-import javax.annotation.Generated;
-
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record6;
 import org.jooq.Row6;
 import org.jooq.impl.UpdatableRecordImpl;
+
+import javax.annotation.Generated;
+import java.sql.Timestamp;
 
 
 /**
@@ -310,6 +308,36 @@ public class MdMigrationsRecord extends UpdatableRecordImpl<MdMigrationsRecord> 
         value5(value5);
         value6(value6);
         return this;
+    }
+
+    @Override
+    public Integer component1() {
+        return null;
+    }
+
+    @Override
+    public String component2() {
+        return null;
+    }
+
+    @Override
+    public String component3() {
+        return null;
+    }
+
+    @Override
+    public String component4() {
+        return null;
+    }
+
+    @Override
+    public Timestamp component5() {
+        return null;
+    }
+
+    @Override
+    public Long component6() {
+        return null;
     }
 
     // -------------------------------------------------------------------------

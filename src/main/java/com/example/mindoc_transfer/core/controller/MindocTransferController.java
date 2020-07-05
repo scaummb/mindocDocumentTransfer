@@ -1,6 +1,7 @@
 package com.example.mindoc_transfer.core.controller;
 
 import com.example.mindoc_transfer.core.service.TransferService;
+import com.example.mindoc_transfer.core.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +24,32 @@ public class MindocTransferController {
 	@Autowired
 	private TransferService transferService;
 
+	@Autowired
+	private UserService userService;
+
 	@RequestMapping("transfer")
 	@ResponseBody
 	public TransferResponse transfer(@Valid TransferCommand command){
 		return transferService.transfer(command);
 	}
+
+	@RequestMapping("testGogs")
+	@ResponseBody
+	public void testGogs(){
+		transferService.testGogs();
+	}
+
+	@RequestMapping("testUploadPic")
+	@ResponseBody
+	public void testUploadPic(){
+		transferService.testUploadPic();
+	}
+
+	@RequestMapping("testDB")
+	@ResponseBody
+	public void testDB(){
+		transferService.testDB();
+	}
+
+
 }

@@ -12,4 +12,10 @@ public interface TransferService {
 
 	TransferResponse transfer(TransferCommand command);
 
+	void testUploadPic();
+
+	void testGogs();
+
+	void testDB();
+
 }

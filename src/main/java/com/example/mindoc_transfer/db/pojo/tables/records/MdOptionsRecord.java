@@ -5,14 +5,13 @@ package com.example.mindoc_transfer.db.pojo.tables.records;
 
 
 import com.example.mindoc_transfer.db.pojo.tables.MdOptions;
-
-import javax.annotation.Generated;
-
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record5;
 import org.jooq.Row5;
 import org.jooq.impl.UpdatableRecordImpl;
+
+import javax.annotation.Generated;
 
 
 /**
@@ -268,6 +267,31 @@ public class MdOptionsRecord extends UpdatableRecordImpl<MdOptionsRecord> implem
         value4(value4);
         value5(value5);
         return this;
+    }
+
+    @Override
+    public Integer component1() {
+        return null;
+    }
+
+    @Override
+    public String component2() {
+        return null;
+    }
+
+    @Override
+    public String component3() {
+        return null;
+    }
+
+    @Override
+    public String component4() {
+        return null;
+    }
+
+    @Override
+    public String component5() {
+        return null;
     }
 
     // -------------------------------------------------------------------------

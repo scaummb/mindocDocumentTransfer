@@ -1,6 +1,6 @@
 package com.example.mindoc_transfer.core.provider;
 
-import com.example.mindoc_transfer.core.bean.HelpCenterAttachments;
+import com.example.mindoc_transfer.core.bean.MindocAttachments;
 
 import java.util.List;
 
@@ -11,6 +11,6 @@ import java.util.List;
 
 public interface MdAttachmentsProvider {
 
-	List<HelpCenterAttachments> listAttachmentsByBookId(Integer bookId);
+	List<MindocAttachments> listAttachmentsByBookId(Integer bookId);
 
 }

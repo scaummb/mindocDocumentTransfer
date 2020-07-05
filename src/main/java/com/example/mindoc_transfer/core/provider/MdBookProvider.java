@@ -13,4 +13,6 @@ public interface MdBookProvider {
 
 	List<MindocBooks> listBooksByIds(List<Integer> ids);
 
+	MindocBooks findBookById(int id);
+
 }

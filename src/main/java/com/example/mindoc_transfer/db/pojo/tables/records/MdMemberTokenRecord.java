@@ -5,16 +5,14 @@ package com.example.mindoc_transfer.db.pojo.tables.records;
 
 
 import com.example.mindoc_transfer.db.pojo.tables.MdMemberToken;
-
-import java.sql.Timestamp;
-
-import javax.annotation.Generated;
-
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record7;
 import org.jooq.Row7;
 import org.jooq.impl.UpdatableRecordImpl;
+
+import javax.annotation.Generated;
+import java.sql.Timestamp;
 
 
 /**
@@ -350,6 +348,41 @@ public class MdMemberTokenRecord extends UpdatableRecordImpl<MdMemberTokenRecord
         value6(value6);
         value7(value7);
         return this;
+    }
+
+    @Override
+    public Integer component1() {
+        return null;
+    }
+
+    @Override
+    public Integer component2() {
+        return null;
+    }
+
+    @Override
+    public String component3() {
+        return null;
+    }
+
+    @Override
+    public String component4() {
+        return null;
+    }
+
+    @Override
+    public Byte component5() {
+        return null;
+    }
+
+    @Override
+    public Timestamp component6() {
+        return null;
+    }
+
+    @Override
+    public Timestamp component7() {
+        return null;
     }
 
     // -------------------------------------------------------------------------

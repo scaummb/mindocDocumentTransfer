@@ -1,24 +1,21 @@
 package com.example.mindoc_transfer.core.provider;
 
-import com.example.mindoc_transfer.core.bean.MindocAttachments;
+import com.example.mindoc_transfer.core.bean.MindocDocuments;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 /**
  * @author moubin.mo
- * @date: 2020/7/3 14:42
+ * @date: 2020/7/4 17:55
  */
 @Component
-public class MdAttachmentsProviderImpl implements MdAttachmentsProvider{
+public class MdDocumentProviderImpl implements MdDocumentProvider {
 
 	@Autowired
 	private DbProvider dbProvider;
 
 	@Override
-	public List<MindocAttachments> listAttachmentsByBookId(Integer bookId) {
-
+	public MindocDocuments findDocumentByParentIdAndBookId(Integer bookId, Long defaultParentId) {
 		return null;
 	}
 

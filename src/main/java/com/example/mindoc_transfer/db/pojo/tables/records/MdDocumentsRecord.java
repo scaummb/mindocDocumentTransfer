@@ -5,16 +5,14 @@ package com.example.mindoc_transfer.db.pojo.tables.records;
 
 
 import com.example.mindoc_transfer.db.pojo.tables.MdDocuments;
-
-import java.sql.Timestamp;
-
-import javax.annotation.Generated;
-
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record14;
 import org.jooq.Row14;
 import org.jooq.impl.UpdatableRecordImpl;
+
+import javax.annotation.Generated;
+import java.sql.Timestamp;
 
 
 /**
@@ -630,6 +628,76 @@ public class MdDocumentsRecord extends UpdatableRecordImpl<MdDocumentsRecord> im
         value13(value13);
         value14(value14);
         return this;
+    }
+
+    @Override
+    public Integer component1() {
+        return null;
+    }
+
+    @Override
+    public String component2() {
+        return null;
+    }
+
+    @Override
+    public String component3() {
+        return null;
+    }
+
+    @Override
+    public Integer component4() {
+        return null;
+    }
+
+    @Override
+    public Integer component5() {
+        return null;
+    }
+
+    @Override
+    public Integer component6() {
+        return null;
+    }
+
+    @Override
+    public String component7() {
+        return null;
+    }
+
+    @Override
+    public String component8() {
+        return null;
+    }
+
+    @Override
+    public String component9() {
+        return null;
+    }
+
+    @Override
+    public Timestamp component10() {
+        return null;
+    }
+
+    @Override
+    public Integer component11() {
+        return null;
+    }
+
+    @Override
+    public Timestamp component12() {
+        return null;
+    }
+
+    @Override
+    public Integer component13() {
+        return null;
+    }
+
+    @Override
+    public Long component14() {
+        return null;
     }
 
     // -------------------------------------------------------------------------

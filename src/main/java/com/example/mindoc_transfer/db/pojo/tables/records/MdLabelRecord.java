@@ -5,14 +5,13 @@ package com.example.mindoc_transfer.db.pojo.tables.records;
 
 
 import com.example.mindoc_transfer.db.pojo.tables.MdLabel;
-
-import javax.annotation.Generated;
-
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record3;
 import org.jooq.Row3;
 import org.jooq.impl.UpdatableRecordImpl;
+
+import javax.annotation.Generated;
 
 
 /**
@@ -188,6 +187,21 @@ public class MdLabelRecord extends UpdatableRecordImpl<MdLabelRecord> implements
         value2(value2);
         value3(value3);
         return this;
+    }
+
+    @Override
+    public Integer component1() {
+        return null;
+    }
+
+    @Override
+    public String component2() {
+        return null;
+    }
+
+    @Override
+    public Integer component3() {
+        return null;
     }
 
     // -------------------------------------------------------------------------
