@@ -27,10 +27,16 @@ public class MindocTransferController {
 	@Autowired
 	private UserService userService;
 
-	@RequestMapping("transfer")
+	@RequestMapping("transferBook")
 	@ResponseBody
-	public TransferResponse transfer(@Valid TransferCommand command){
-		return transferService.transfer(command);
+	public TransferResponse transferBook(@Valid TransferBookCommand command){
+		return transferService.transferBook(command);
+	}
+
+	@RequestMapping("batchTransfer")
+	@ResponseBody
+	public TransferResponse batchTransfer(@Valid TransferCommand command){
+		return transferService.batchTransfer(command);
 	}
 
 	@RequestMapping("testGogs")

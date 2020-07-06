@@ -1,8 +1,16 @@
 package com.example.mindoc_transfer.core.provider;
 
+import com.everhomes.util.DateHelper;
 import com.example.mindoc_transfer.core.bean.HelpCenterDocument;
+import com.example.mindoc_transfer.core.constants.TableName;
+import com.example.mindoc_transfer.core.constants.business.HelpCenterStatus;
+import com.example.mindoc_transfer.core.utils.IdFactory;
+import com.example.mindoc_transfer.db.pojo.tables.daos.OpcHelpCenterFilesStructuresDao;
+import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.sql.Timestamp;
 
 /**
  * @author moubin.mo
@@ -14,9 +22,19 @@ public class HelpCenterDocumentProviderImpl implements HelpCenterDocumentProvide
 	@Autowired
 	private DbProvider dbProvider;
 
+	@Autowired
+	private DSLContext dslContext;
+
 	@Override
 	public HelpCenterDocument createSingleDocument(HelpCenterDocument document) {
-		return null;
+		document.setId(IdFactory.getNextId(TableName.FILE.getName()));
+		document.setCreatorUid(1L);
+		document.setCreateTime(new Timestamp(DateHelper.currentGMTTime().getTime()));
+		document.setUpdateTime(new Timestamp(DateHelper.currentGMTTime().getTime()));
+		document.setStatus(HelpCenterStatus.VALID.getCode());
+		OpcHelpCenterFilesStructuresDao dao = new OpcHelpCenterFilesStructuresDao(dslContext.configuration());
+		dao.insert(document);
+		return document;
 	}
 
 }

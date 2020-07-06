@@ -1,5 +1,6 @@
 package com.example.mindoc_transfer.core.service;
 
+import com.example.mindoc_transfer.core.controller.TransferBookCommand;
 import com.example.mindoc_transfer.core.controller.TransferCommand;
 import com.example.mindoc_transfer.core.controller.TransferResponse;
 
@@ -10,12 +11,14 @@ import com.example.mindoc_transfer.core.controller.TransferResponse;
 
 public interface TransferService {
 
-	TransferResponse transfer(TransferCommand command);
+	TransferResponse batchTransfer(TransferCommand command);
 
 	void testUploadPic();
 
 	void testGogs();
 
 	void testDB();
+
+	TransferResponse transferBook(TransferBookCommand command);
 
 }

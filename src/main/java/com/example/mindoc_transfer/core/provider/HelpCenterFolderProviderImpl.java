@@ -2,7 +2,9 @@ package com.example.mindoc_transfer.core.provider;
 
 import com.everhomes.util.DateHelper;
 import com.example.mindoc_transfer.core.bean.HelpCenterFolder;
+import com.example.mindoc_transfer.core.constants.TableName;
 import com.example.mindoc_transfer.core.constants.business.HelpCenterStatus;
+import com.example.mindoc_transfer.core.utils.IdFactory;
 import com.example.mindoc_transfer.db.pojo.tables.daos.OpcHelpCenterFoldersStructuresDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,7 +17,6 @@ import java.sql.Timestamp;
  */
 @Component
 public class HelpCenterFolderProviderImpl implements HelpCenterFolderProvider {
-	private volatile static Long folderId = 1L;
 
 	@Autowired
 	private DbProvider dbProvider;
@@ -36,6 +37,6 @@ public class HelpCenterFolderProviderImpl implements HelpCenterFolderProvider {
 	}
 
 	private final synchronized Long getFolderId(){
-		return folderId++;
+		return IdFactory.getNextId(TableName.FOLDER.getName());
 	}
 }

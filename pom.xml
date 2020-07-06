@@ -108,12 +108,6 @@
             <version>3.10.8</version>
         </dependency>
 
-        <!-- kafka -->
-        <dependency>
-            <groupId>org.springframework.kafka</groupId>
-            <artifactId>spring-kafka</artifactId>
-        </dependency>
-
         <!-- gogs服务 -->
         <dependency>
             <groupId>com.everhomes.tachikoma</groupId>

@@ -7,15 +7,20 @@ import com.everhomes.tachikoma.gogs.pojo.GogsCommit;
 import com.everhomes.tachikoma.gogs.pojo.GogsRawFileParam;
 import com.everhomes.tachikoma.gogs.pojo.GogsRepo;
 import com.everhomes.tachikoma.gogs.pojo.GogsRepoType;
+import com.everhomes.util.DateHelper;
 import com.everhomes.util.RuntimeErrorException;
 import com.example.mindoc_transfer.core.bean.*;
+import com.example.mindoc_transfer.core.constants.TableName;
 import com.example.mindoc_transfer.core.constants.TransferConstants;
 import com.example.mindoc_transfer.core.constants.business.DraftFlag;
 import com.example.mindoc_transfer.core.constants.business.ErrorCodes;
+import com.example.mindoc_transfer.core.constants.business.FileType;
 import com.example.mindoc_transfer.core.constants.business.HelpCenterFixType;
+import com.example.mindoc_transfer.core.controller.TransferBookCommand;
 import com.example.mindoc_transfer.core.controller.TransferCommand;
 import com.example.mindoc_transfer.core.controller.TransferResponse;
 import com.example.mindoc_transfer.core.provider.*;
+import com.example.mindoc_transfer.core.utils.IdFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
@@ -36,10 +41,12 @@ import org.springframework.util.ObjectUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.sql.Timestamp;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -78,7 +85,7 @@ public class TransferServiceImpl implements TransferService {
 	private TransferGogsService gogsService;
 
 	@Override
-	public TransferResponse transfer(TransferCommand command) {
+	public TransferResponse batchTransfer(TransferCommand command) {
 		if (StringUtils.isBlank(command.getBookIds())){
 			LOGGER.error("bookIds is blank!!");
 			System.exit(0);
@@ -95,25 +102,40 @@ public class TransferServiceImpl implements TransferService {
 	@Override
 	public void testUploadPic() {
 		UserLogon userLogon = userService.logon(TransferConstants.IDENTIFY, TransferConstants.PASSWORD);
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-		HttpPost httpPost = new HttpPost(TransferConstants.UPLOAD_PICTURE_URL + "?token=" + userLogon.getLoginToken());//建立HttpPost对象,改成自己的地址
+
 		File file = new File("C:\\Users\\zuolin\\Desktop\\11.png");//相对路径使用不了的话,使用图片绝对路径
-		if(!file.exists()){//判断文件是否存在
+		uploadPic(userLogon.getLoginToken(), file);
+
+	}
+
+	/**
+	 * 上传图片到contentserver
+	 */
+	private void uploadPic(String loginToken, File file) {
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		//建立HttpPost对象,改成自己的地址
+		HttpPost httpPost = new HttpPost(TransferConstants.UPLOAD_PICTURE_URL + "?token=" + loginToken);
+		//判断文件是否存在
+		if(!file.exists()){
 			System.out.print("文件不存在");
 			return;
 		}
-		FileBody bin = new FileBody(file, ContentType.create("image/png", Consts.UTF_8));//创建图片提交主体信息
+		//创建图片提交主体信息
+		FileBody bin = new FileBody(file, ContentType.create("image/png", Consts.UTF_8));
+		//添加到请求
 		HttpEntity entity = MultipartEntityBuilder
 				.create()
 				.setCharset(Charset.forName("utf-8"))
-				.addPart("upload_file", bin)//添加到请求
+				.addPart("upload_file", bin)
 				.build();
 		httpPost.setEntity(entity);
-		HttpResponse response= null;//发送Post,并返回一个HttpResponse对象
+		//发送Post,并返回一个HttpResponse对象
+		HttpResponse response= null;
 		try {
 			response = httpClient.execute(httpPost);
 			LOGGER.info("response = "+ response);
-			if(response.getStatusLine().getStatusCode()==200) {//如果状态码为200,就是正常返回
+			if(response.getStatusLine().getStatusCode()==200) {
+				//如果状态码为200,就是正常返回
 				String result = EntityUtils.toString(response.getEntity());
 				System.out.print(result);
 			}
@@ -142,6 +164,64 @@ public class TransferServiceImpl implements TransferService {
 	public void testDB() {
 		MindocBooks book = mdBookProvider.findBookById(1);
 		LOGGER.info("book = {}", book);
+	}
+
+	@Override
+	public TransferResponse transferBook(TransferBookCommand command) {
+		UserLogon userLogon = userService.logon(TransferConstants.IDENTIFY, TransferConstants.PASSWORD);
+
+		MindocBooks book = mdBookProvider.findBookById(Integer.valueOf(command.getBookId()));
+		// 迁移book至folder
+		HelpCenterFolder folder = buildHelpCenterFolder(book);
+		helpCenterFolderProvider.createFolder(TransferConstants.DEFAULT_PATH, folder);
+
+		if (!ObjectUtils.isEmpty(book)){
+			List<MindocDocuments> documents = mdDocumentProvider.listDocumentByParentIdAndBookId(book.getBookId(), TransferConstants.DEFAULT_PARENT_ID);
+			// mindoc根节点
+			MindocDocuments rootMindocDocument = documents.get(0);
+			HelpCenterDocument document = buildHelpCenterDocument(rootMindocDocument, folder.getId());
+			// 迁移mindoc根节点
+			buildAndCreateDocumentWithNewParentIdAndPath(TransferConstants.DEFAULT_PATH, TransferConstants.DEFAULT_PARENT_ID.longValue(), document, rootMindocDocument.getMarkdown(), userLogon.getLoginToken());
+
+			List<MindocDocuments> subMindocDocuments = mdDocumentProvider.listDocumentByParentIdAndBookId(book.getBookId(), rootMindocDocument.getDocumentId());
+			if (!CollectionUtils.isEmpty(subMindocDocuments)){
+
+
+			}
+
+
+		}
+
+		TransferResponse response = new TransferResponse();
+		return response;
+	}
+
+	private HelpCenterDocument buildHelpCenterDocument(MindocDocuments rootMindocDocument, Long folderId) {
+		HelpCenterDocument document = new HelpCenterDocument();
+		document.setFolderStructureId(folderId);
+		document.setLevel(TransferConstants.DEFAULT_LEVEL);
+		document.setSortNum(TransferConstants.SORT_NUM);
+		document.setNamespaceId(TransferConstants.DEFAULT_NAMESPACE_ID);
+		document.setFileName(rootMindocDocument.getDocumentName());
+		document.setDraftFlag(DraftFlag.DRAFT.getCode());
+		return document;
+	}
+
+	/**
+	 * <p>迁移book到folder</p>
+	 */
+	private HelpCenterFolder buildHelpCenterFolder(MindocBooks book) {
+		HelpCenterFolder folder = new HelpCenterFolder();
+		folder.setCategoryId(TransferConstants.DEFAULT_CATEGORY_ID);
+		folder.setCreateTime(new Timestamp(DateHelper.currentGMTTime().getTime()));
+		folder.setFileName(book.getBookName());
+		folder.setFileType(FileType.FILE.getCode());
+		folder.setParentId(TransferConstants.DEFAULT_PARENT_ID.longValue());
+		folder.setSortNum(TransferConstants.SORT_NUM);
+		folder.setNamespaceId(TransferConstants.DEFAULT_NAMESPACE_ID);
+		folder.setLevel(TransferConstants.DEFAULT_LEVEL);
+		folder.setFixedFlag(HelpCenterFixType.UNFIXED.getCode());
+		return folder;
 	}
 
 	/**
@@ -183,7 +263,7 @@ public class TransferServiceImpl implements TransferService {
 		HelpCenterFolder folder = new HelpCenterFolder();
 		folder.setFileName(book.getBookName());
 		folder.setFileType(DraftFlag.DRAFT.getCode());
-		folder.setParentId(TransferConstants.DEFAULT_PARENT_ID);
+		folder.setParentId(TransferConstants.DEFAULT_PARENT_ID.longValue());
 		folder.setSortNum(0);
 		folder.setNamespaceId(TransferConstants.DEFAULT_NAMESPACE_ID);
 		folder.setLevel(1);
@@ -192,9 +272,10 @@ public class TransferServiceImpl implements TransferService {
 		helpCenterFolderProvider.createFolder(TransferConstants.DEFAULT_PATH, folder);
 
 		//todo 遍历上传book的文档与图片
-		MindocDocuments mindocDocument = mdDocumentProvider.findDocumentByParentIdAndBookId(book.getBookId(), TransferConstants.DEFAULT_PARENT_ID);
-		if (!ObjectUtils.isEmpty(mindocDocument)){
-			buildHelpCenterDocument(mindocDocument, folder.getId(), TransferConstants.DEFAULT_PARENT_ID);
+		List<MindocDocuments> documents = mdDocumentProvider.listDocumentByParentIdAndBookId(book.getBookId(), TransferConstants.DEFAULT_PARENT_ID);
+		if (CollectionUtils.isEmpty(documents)){
+//			buildAndCreateDocumentWithNewParentIdAndPath();
+//			buildHelpCenterDocument(mindocDocument, folder.getId(), TransferConstants.DEFAULT_PARENT_ID.longValue());
 		}
 
 //		getMindocDocumentTree();
@@ -215,17 +296,151 @@ public class TransferServiceImpl implements TransferService {
 		return false;
 	}
 
-	private void buildHelpCenterDocument(MindocDocuments mindocDocument, Long folderStructureId, Long parentId) {
-//		HelpCenterDocument document = new HelpCenterDocument();
-//		document.setId(id);
-//		document.setParentId(parentId);
-//		document.setSortNum(1);
-//		document.setFolderStructureId(folderStructureId);
-//		document.setFileName(mindocDocument.getDocumentName());
-//		document.setPath(parentDocument.getPath().concat("/").concat(id.toString()));
-//		document.setLevel(parentDocument.getLevel()+1);
+
+	/**
+	 * <p>构造新的文档数据，并更新id/path/parentId/lastcommit</p>
+	 */
+	private HelpCenterDocument buildAndCreateDocumentWithNewParentIdAndPath(String parentPath, Long parentId, HelpCenterDocument helpCenterDocument, String markdown, String loginToken) {
+		HelpCenterDocument copyDoc = ConvertHelper.convert(helpCenterDocument, HelpCenterDocument.class);
+		Long id = IdFactory.getNextId(TableName.FILE.getName());
+		copyDoc.setId(id);
+		copyDoc.setPath(parentPath.concat("/").concat(id.toString()));
+		copyDoc.setParentId(parentId);
+		try{
+			GogsRepo repo = gogsRepo(TransferConstants.DEFAULT_NAMESPACE_ID, TransferConstants.DEFAULT_DOCUMENT_GOGS_MODULE_TYPE, TransferConstants.DEFAULT_MODULE_ID, TransferConstants. DEFAULT_DOCUMENT_GOGS_OWNER_TYPE, TransferConstants.DEFAULT_DOCUMENT_GOGS_OWNER_ID);
+			String markDownContent = handleMindocMarkDownContent(markdown, loginToken);
+			GogsCommit commit = gogsCommitScript(repo, copyDoc.getPath(), "", markDownContent, true);
+			copyDoc.setLastCommit(commit.getId());
+		} catch (Exception e){
+			throwHelpCenterInnerError(
+					String.format("id=/%s,parentId=/%s,folderStructureId=/%s", copyDoc.getId(), copyDoc.getParentId(), copyDoc.getFolderStructureId()),
+					"Create document content error, gogs报错: " + e.toString());
+		}
+		return helpCenterDocumentProvider.createSingleDocument(copyDoc);
 	}
 
+	/**
+	 * <p>处理mindoc的markdown语法文本，匹配图片路径并上传到contentserver</p>
+	 */
+	private String handleMindocMarkDownContent(String markdown, String loginToken) {
+		Pattern p = Pattern.compile(TransferConstants.PICTURE_FILTER_REGEX);
+		Matcher m = p.matcher(markdown);
+		ArrayList<String> keywordList = new ArrayList();
+		// 全文本关键字匹配
+		while (m.find()) {
+			keywordList.add(m.group(0));
+		}
+		LOGGER.info("handleMindocMarkDownContent: keywordList = {}", keywordList);
+		// 文本图片迁移
+		HashMap<String, String> keywordToContentServerUrlMap = handleKeyWordList(keywordList, loginToken);
+		// 全文本替换原来的关键字
+		String content = replaceAllKeyWord(markdown, keywordToContentServerUrlMap);
+		return content;
+	}
+
+	/**
+	 * <p>全文本替换所有的关键字</p>
+	 */
+	private String replaceAllKeyWord(String markdown, HashMap<String,String> keywordToContentServerUrlMap) {
+		if (!CollectionUtils.isEmpty(keywordToContentServerUrlMap)){
+			Iterator<String> iterator = keywordToContentServerUrlMap.keySet().iterator();
+			while (iterator.hasNext()){
+				String keyword = iterator.next();
+				markdown = markdown.replaceAll(handleKey(keyword), handleValue(keywordToContentServerUrlMap.get(keyword)));
+			}
+		}
+		return markdown;
+	}
+
+	/**
+	 * <p>
+	 *     文本图片迁移:key=mindoc原图片地址，value=ContentServer地址
+	 * </p>
+	 */
+	private HashMap<String,String> handleKeyWordList(ArrayList<String> keywordList, String loginToken) {
+		if (CollectionUtils.isEmpty(keywordList)){
+			return new HashMap<>();
+		}
+
+		HashMap<String, String> keywordToContentServerUrlMap = new HashMap<>();
+		keywordList.stream().forEach(keyword -> {
+			try {
+				keywordToContentServerUrlMap.putIfAbsent(keyword, getTransferCSUrl(keyword, loginToken));
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+		});
+
+		return keywordToContentServerUrlMap;
+	}
+
+	/**
+	 * <p>获取图片服务器的图片资源定位符</p>
+	 */
+	private String getTransferCSUrl(String keyword, String loginToken) throws URISyntaxException {
+		// 图片链接配置了域名
+		if (keyword.startsWith("http://s.a.com/") || keyword.startsWith("http://serverdoc.lab.everhomes.com/")){
+			File file = null;//相对路径使用不了的话,使用图片绝对路径
+			try {
+				file = new File(new URL(keyword).toURI());
+				uploadPic(loginToken, file);
+			} catch (Exception e) {
+				LOGGER.error("getTransferCSUrl(http://s.a.com/ or http://serverdoc.lab.everhomes.com/): e = {}", e);
+			}
+		} else {
+			//相对路径使用不了的话,使用图片绝对路径,为了方便已经提前将全部附件导出到本地
+			File file = new File(TransferConstants.DEFAULT_TRANSFER_ATTACHMENT_PATH + keyword);
+			try {
+				uploadPic(loginToken, file);
+			} catch (Exception e) {
+				LOGGER.error("getTransferCSUrl of relative path : e = {}", e);
+			}
+		}
+
+		return null;
+	}
+
+	private URLConnection connect(URL url) {
+		URLConnection connection = null;
+		try {
+			connection = url.openConnection();
+			// 设置通用的请求属性
+			connection.setRequestProperty("accept", "*/*");
+			connection.setRequestProperty("connection", "Keep-Alive");
+			connection.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+			connection.setConnectTimeout(5000);
+			connection.setReadTimeout(5000);
+			// 建立实际的连接
+			connection.connect();
+		} catch (IOException e) {
+			LOGGER.error("msg",e);
+			e.printStackTrace();
+		}
+		return connection;
+	}
+
+	/**
+	 * <p>处理文本key值</p>
+	 */
+	private static String handleKey(String key) {
+		key = key.replaceAll("\\!","\\\\\\!");
+		key = key.replaceAll("\\[","\\\\\\[");
+		key = key.replaceAll("\\]","\\\\\\]");
+		key = key.replaceAll("\\(","\\\\\\(");
+		key = key.replaceAll("\\/","\\\\\\/");
+		key = key.replaceAll("\\)","\\\\\\)");
+		return key;
+	}
+
+	/**
+	 * <p>处理文本value值</p>
+	 */
+	private String handleValue(String value) {
+		return "![](" + value + ")";
+	}
+	/**
+	 * <p>迁移附件</p>
+	 */
 	private void transferAttachments(List<MindocAttachments> bookAttachments) {
 		if (!CollectionUtils.isEmpty(bookAttachments)){
 			bookAttachments.stream().map(r -> convertToHelpcenterAttachment(r)).collect(Collectors.toList());
@@ -304,6 +519,6 @@ public class TransferServiceImpl implements TransferService {
 	 * <p>设置提交用户信息</p>
 	 */
 	private String gogsCommitMessage() {
-		return String.format("Author: %s\n UID: %s\n Identifier: %s", "transfer", "1", "18819467607");
+		return String.format("Author: %s\n UID: %s\n Identifier: %s", "batchTransfer", "1", "18819467607");
 	}
 }
