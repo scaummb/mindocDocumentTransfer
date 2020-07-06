@@ -13,12 +13,14 @@ public interface TransferService {
 
 	TransferResponse batchTransfer(TransferCommand command);
 
+	TransferResponse transferBook(TransferBookCommand command);
+
 	void testUploadPic();
+
+	void testUploadFile();
 
 	void testGogs();
 
 	void testDB();
-
-	TransferResponse transferBook(TransferBookCommand command);
 
 }

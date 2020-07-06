@@ -108,6 +108,21 @@ public class TransferServiceImpl implements TransferService {
 
 	}
 
+	@Override
+	public void testUploadFile() {
+		UserLogon userLogon = userService.logon(TransferConstants.IDENTIFY, TransferConstants.PASSWORD);
+		File file = new File("C:\\Users\\zuolin\\Desktop\\11.png");//相对路径使用不了的话,使用图片绝对路径
+		uploadFile();
+
+	}
+
+	/**
+	 * 上传图片到contentserver
+	 */
+	private void uploadFile() {
+		//
+	}
+
 	/**
 	 * 上传图片到contentserver
 	 */
@@ -171,31 +186,92 @@ public class TransferServiceImpl implements TransferService {
 		UserLogon userLogon = userService.logon(TransferConstants.IDENTIFY, TransferConstants.PASSWORD);
 
 		MindocBooks book = mdBookProvider.findBookById(Integer.valueOf(command.getBookId()));
-		// 迁移book至folder
+		// 1.迁移book至folder
 		HelpCenterFolder folder = buildHelpCenterFolder(book);
 		helpCenterFolderProvider.createFolder(TransferConstants.DEFAULT_PATH, folder);
 
 		if (!ObjectUtils.isEmpty(book)){
-			List<MindocDocuments> documents = mdDocumentProvider.listDocumentByParentIdAndBookId(book.getBookId(), TransferConstants.DEFAULT_PARENT_ID);
-			// mindoc根节点
-			MindocDocuments rootMindocDocument = documents.get(0);
-			HelpCenterDocument document = buildHelpCenterDocument(rootMindocDocument, folder.getId());
+			// 2.迁移documents至files
+			List<MindocDocuments> documents = mdDocumentProvider.listDocumentsByParentIdAndBookId(book.getBookId(), TransferConstants.DEFAULT_PARENT_ID);
 			// 迁移mindoc根节点
-			buildAndCreateDocumentWithNewParentIdAndPath(TransferConstants.DEFAULT_PATH, TransferConstants.DEFAULT_PARENT_ID.longValue(), document, rootMindocDocument.getMarkdown(), userLogon.getLoginToken());
+			MindocDocuments rootMindocDocument = documents.get(0);
+			HelpCenterDocument rootDocument = buildHelpCenterDocument(rootMindocDocument, folder.getId());
+			rootDocument = buildAndCreateDocumentWithNewParentIdAndPath(TransferConstants.DEFAULT_PATH, TransferConstants.DEFAULT_PARENT_ID.longValue(), rootDocument, rootMindocDocument.getMarkdown(), userLogon.getLoginToken());
 
-			List<MindocDocuments> subMindocDocuments = mdDocumentProvider.listDocumentByParentIdAndBookId(book.getBookId(), rootMindocDocument.getDocumentId());
+			// 发现mindoc的下节点数据
+			List<MindocDocuments> subMindocDocuments = mdDocumentProvider.listDocumentsByParentIdAndBookId(book.getBookId(), rootMindocDocument.getDocumentId());
 			if (!CollectionUtils.isEmpty(subMindocDocuments)){
+				for (MindocDocuments subMindocDocument : subMindocDocuments){
 
+					// 递归迁移mindoc余下节点数据
+					HelpCenterDocument subDocument = buildHelpCenterDocument(subMindocDocument, folder.getId());
+					buildAndCreateDocumentWithNewParentIdAndPath(rootDocument.getPath(), rootDocument.getId(), subDocument, subMindocDocument.getMarkdown(), userLogon.getLoginToken());
+					transferSubMindocDocument(book.getBookId(), subMindocDocument.getDocumentId(), subDocument.getFolderStructureId(),subDocument.getPath(),subDocument.getId(), userLogon.getLoginToken());
+				}
 
 			}
 
-
+			// 3.迁移attachments至帮助中心附件表
+			List<MindocAttachments> mindocAttachments = mdAttachmentsProvider.listAttachmentsByBookId(book.getBookId());
+			if (!CollectionUtils.isEmpty(mindocAttachments)){
+				List<HelpCenterAttachments> helpCenterAttachments = batchBuildHelpCenterAttachments(mindocAttachments, folder.getId());
+				helpCenterAttachmentProvider.batchCreateAttachments(helpCenterAttachments);
+			}
 		}
 
 		TransferResponse response = new TransferResponse();
 		return response;
 	}
 
+	/**
+	 * <p>批量构造帮助中心的附件</p>
+	 */
+	private List<HelpCenterAttachments> batchBuildHelpCenterAttachments(List<MindocAttachments> mindocAttachments, Long folderId) {
+		if (!CollectionUtils.isEmpty(mindocAttachments)){
+			mindocAttachments.stream().map(mindocAttachment -> convertToHelpCenterAttachments(mindocAttachment, folderId)).collect(Collectors.toList());
+		}
+		return Collections.emptyList();
+	}
+
+	/**
+	 * <p>构造帮助中心附件</p>
+	 */
+	private HelpCenterAttachments convertToHelpCenterAttachments(MindocAttachments mindocAttachment, Long folderId) {
+		HelpCenterAttachments helpCenterAttachment = ConvertHelper.convert(mindocAttachment, HelpCenterAttachments.class);
+		helpCenterAttachment.setId(IdFactory.getNextId(TableName.ATTACHMENT.getName()).intValue());
+		helpCenterAttachment.setFolderStructureId(folderId);
+		helpCenterAttachment.setFileStructureId(null);
+		helpCenterAttachment.setFileUrl(getCSFileUrl(mindocAttachment));
+		return helpCenterAttachment;
+	}
+
+	/**
+	 * <p>上传并返回文件服务器URL</p>
+	 */
+	private String getCSFileUrl(MindocAttachments mindocAttachment) {
+
+		return null;
+	}
+
+	/**
+	 * <p>递归迁移mindoc子节点的文档数据至帮助中心</p>
+	 */
+	private void transferSubMindocDocument(Integer mindocBookId, Integer mindocParantDocumentId, Long folderStructureId, String parentHelpcenterDocumentPath, Long parentHelpcenterDocumentId, String loginToken) {
+		List<MindocDocuments> subMindocDocuments = mdDocumentProvider.listDocumentsByParentIdAndBookId(mindocBookId, mindocParantDocumentId);
+		if (!CollectionUtils.isEmpty(subMindocDocuments)){
+			for (MindocDocuments subMindocDocument : subMindocDocuments){
+				// 迁移mindoc节点数据
+				HelpCenterDocument subDocument = buildHelpCenterDocument(subMindocDocument, folderStructureId);
+				buildAndCreateDocumentWithNewParentIdAndPath(parentHelpcenterDocumentPath, parentHelpcenterDocumentId, subDocument, subMindocDocument.getMarkdown(), loginToken);
+				transferSubMindocDocument(mindocBookId, subMindocDocument.getDocumentId(), folderStructureId, subDocument.getPath(), subDocument.getParentId(), loginToken);
+			}
+		}
+	}
+
+
+	/**
+	 * <p>构造帮助中心章节文档</p>
+	 */
 	private HelpCenterDocument buildHelpCenterDocument(MindocDocuments rootMindocDocument, Long folderId) {
 		HelpCenterDocument document = new HelpCenterDocument();
 		document.setFolderStructureId(folderId);
@@ -272,7 +348,7 @@ public class TransferServiceImpl implements TransferService {
 		helpCenterFolderProvider.createFolder(TransferConstants.DEFAULT_PATH, folder);
 
 		//todo 遍历上传book的文档与图片
-		List<MindocDocuments> documents = mdDocumentProvider.listDocumentByParentIdAndBookId(book.getBookId(), TransferConstants.DEFAULT_PARENT_ID);
+		List<MindocDocuments> documents = mdDocumentProvider.listDocumentsByParentIdAndBookId(book.getBookId(), TransferConstants.DEFAULT_PARENT_ID);
 		if (CollectionUtils.isEmpty(documents)){
 //			buildAndCreateDocumentWithNewParentIdAndPath();
 //			buildHelpCenterDocument(mindocDocument, folder.getId(), TransferConstants.DEFAULT_PARENT_ID.longValue());
@@ -298,25 +374,24 @@ public class TransferServiceImpl implements TransferService {
 
 
 	/**
-	 * <p>构造新的文档数据，并更新id/path/parentId/lastcommit</p>
+	 * <p>构造新的帮助中心文档，并更新id/path/parentId/lastcommit</p>
 	 */
 	private HelpCenterDocument buildAndCreateDocumentWithNewParentIdAndPath(String parentPath, Long parentId, HelpCenterDocument helpCenterDocument, String markdown, String loginToken) {
-		HelpCenterDocument copyDoc = ConvertHelper.convert(helpCenterDocument, HelpCenterDocument.class);
 		Long id = IdFactory.getNextId(TableName.FILE.getName());
-		copyDoc.setId(id);
-		copyDoc.setPath(parentPath.concat("/").concat(id.toString()));
-		copyDoc.setParentId(parentId);
+		helpCenterDocument.setId(id);
+		helpCenterDocument.setPath(parentPath.concat("/").concat(id.toString()));
+		helpCenterDocument.setParentId(parentId);
 		try{
 			GogsRepo repo = gogsRepo(TransferConstants.DEFAULT_NAMESPACE_ID, TransferConstants.DEFAULT_DOCUMENT_GOGS_MODULE_TYPE, TransferConstants.DEFAULT_MODULE_ID, TransferConstants. DEFAULT_DOCUMENT_GOGS_OWNER_TYPE, TransferConstants.DEFAULT_DOCUMENT_GOGS_OWNER_ID);
 			String markDownContent = handleMindocMarkDownContent(markdown, loginToken);
-			GogsCommit commit = gogsCommitScript(repo, copyDoc.getPath(), "", markDownContent, true);
-			copyDoc.setLastCommit(commit.getId());
+			GogsCommit commit = gogsCommitScript(repo, helpCenterDocument.getPath(), "", markDownContent, true);
+			helpCenterDocument.setLastCommit(commit.getId());
 		} catch (Exception e){
 			throwHelpCenterInnerError(
-					String.format("id=/%s,parentId=/%s,folderStructureId=/%s", copyDoc.getId(), copyDoc.getParentId(), copyDoc.getFolderStructureId()),
+					String.format("id=/%s,parentId=/%s,folderStructureId=/%s", helpCenterDocument.getId(), helpCenterDocument.getParentId(), helpCenterDocument.getFolderStructureId()),
 					"Create document content error, gogs报错: " + e.toString());
 		}
-		return helpCenterDocumentProvider.createSingleDocument(copyDoc);
+		return helpCenterDocumentProvider.createSingleDocument(helpCenterDocument);
 	}
 
 	/**

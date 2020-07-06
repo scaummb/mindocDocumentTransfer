@@ -57,5 +57,9 @@ public class MindocTransferController {
 		transferService.testDB();
 	}
 
-
+	@RequestMapping("testUploadFile")
+	@ResponseBody
+	public void testUploadFile(){
+		transferService.testUploadFile();
+	}
 }

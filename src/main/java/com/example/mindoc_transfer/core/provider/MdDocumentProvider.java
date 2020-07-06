@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface MdDocumentProvider {
 
-	List<MindocDocuments> listDocumentByParentIdAndBookId(Integer bookId, Integer defaultParentId);
+	List<MindocDocuments> listDocumentsByParentIdAndBookId(Integer bookId, Integer defaultParentId);
 
 	List<MindocDocuments> listDocumentByBookId(Integer bookId);
 

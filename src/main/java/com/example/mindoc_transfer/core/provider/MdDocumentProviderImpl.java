@@ -29,7 +29,7 @@ public class MdDocumentProviderImpl implements MdDocumentProvider {
 	private DSLContext dslContext;
 
 	@Override
-	public List<MindocDocuments> listDocumentByParentIdAndBookId(Integer bookId, Integer parentId) {
+	public List<MindocDocuments> listDocumentsByParentIdAndBookId(Integer bookId, Integer parentId) {
 		SelectQuery<MdDocumentsRecord> query = dslContext.selectQuery(TransferConstants.MD_DOCUMENTS);
 		query.addConditions(TransferConstants.MD_DOCUMENTS.BOOK_ID.eq(bookId));
 		query.addConditions(TransferConstants.MD_DOCUMENTS.PARENT_ID.eq(parentId));
