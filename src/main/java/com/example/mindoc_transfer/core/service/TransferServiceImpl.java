@@ -228,6 +228,11 @@ public class TransferServiceImpl implements TransferService {
 			if (!ObjectUtils.isEmpty(book)){
 				// 2.迁移documents至files
 				List<MindocDocuments> documents = mdDocumentProvider.listDocumentsByParentIdAndBookId(book.getBookId(), TransferConstants.DEFAULT_PARENT_ID);
+
+				if (CollectionUtils.isEmpty(documents)){
+					LOGGER.info("transferBook, documents is null, book = {}", book);
+					return true;
+				}
 				// 迁移mindoc根节点
 				MindocDocuments rootMindocDocument = documents.get(0);
 				HelpCenterDocument rootDocument = buildHelpCenterDocument(rootMindocDocument, folder.getId());
