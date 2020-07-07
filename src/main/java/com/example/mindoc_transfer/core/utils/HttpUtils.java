@@ -55,7 +55,14 @@ import java.util.Map;
  */
 @SuppressWarnings("deprecation")
 public class HttpUtils {
+
 	protected static Logger logger = LoggerFactory.getLogger(HttpUtils.class);
+
+	private static CloseableHttpClient httpClient = HttpClients.createDefault();
+
+	public static CloseableHttpClient getHttpClient() {
+		return httpClient;
+	}
 
 	/**
 	 * post请求 ，超时默认30秒

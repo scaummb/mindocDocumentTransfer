@@ -44,7 +44,7 @@ public class RestPostUtils {
 	 * @param objectClassName
 	 * @return Object
 	 */
-	private static Object parseResponseToPojo(String response, Class<?> objectClassName) {
+	public static Object parseResponseToPojo(String response, Class<?> objectClassName) {
 		Map<String ,Object> jsonmap =  JSONObject.parseObject(response);
 		if (!CollectionUtils.isEmpty(jsonmap)){
 			JSONObject responseJsonObject = (JSONObject) jsonmap.get("response");

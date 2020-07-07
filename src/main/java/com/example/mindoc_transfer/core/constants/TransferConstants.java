@@ -36,9 +36,9 @@ public class TransferConstants {
 	// 登陆地址
 	public final static String LOGON_URL = "http://opc-test59.zuolin.com/opc/user/logon";
 	// 文件服务器地址
-	public final static String UPLOAD_FILE_URL = "http://10.1.120.92:5059/upload/file";
+	public final static String UPLOAD_FILE_URL = "http://beta-cs.zuolin.com/upload/file";
 	// 文件服务器地址
-	public final static String UPLOAD_PICTURE_URL = "http://10.1.120.92:5065/upload/image";
+	public final static String UPLOAD_PICTURE_URL = "http://beta-cs.zuolin.com/upload/image";
 
 	/** 默认仓库文件后缀名 **/
 	public final static String DEFAULT_FILE_SUFFIX = ".txt";

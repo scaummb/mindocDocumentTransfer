@@ -10,27 +10,30 @@ import com.everhomes.tachikoma.gogs.pojo.GogsRepoType;
 import com.everhomes.util.DateHelper;
 import com.everhomes.util.RuntimeErrorException;
 import com.example.mindoc_transfer.core.bean.*;
+import com.example.mindoc_transfer.core.constants.ContentTypeEnum;
 import com.example.mindoc_transfer.core.constants.TableName;
 import com.example.mindoc_transfer.core.constants.TransferConstants;
 import com.example.mindoc_transfer.core.constants.business.DraftFlag;
 import com.example.mindoc_transfer.core.constants.business.ErrorCodes;
 import com.example.mindoc_transfer.core.constants.business.FileType;
 import com.example.mindoc_transfer.core.constants.business.HelpCenterFixType;
+import com.example.mindoc_transfer.core.controller.FileUploadResponse;
 import com.example.mindoc_transfer.core.controller.TransferBookCommand;
 import com.example.mindoc_transfer.core.controller.TransferCommand;
 import com.example.mindoc_transfer.core.controller.TransferResponse;
 import com.example.mindoc_transfer.core.provider.*;
+import com.example.mindoc_transfer.core.utils.HttpUtils;
 import com.example.mindoc_transfer.core.utils.IdFactory;
+import com.example.mindoc_transfer.core.utils.RestPostUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,23 +114,52 @@ public class TransferServiceImpl implements TransferService {
 	@Override
 	public void testUploadFile() {
 		UserLogon userLogon = userService.logon(TransferConstants.IDENTIFY, TransferConstants.PASSWORD);
-		File file = new File("C:\\Users\\zuolin\\Desktop\\11.png");//相对路径使用不了的话,使用图片绝对路径
-		uploadFile();
-
+		File file = new File("I:\\mindoc_windows_amd64\\uploads\\202006\\attach_161acebdd9e82efc.png");//相对路径使用不了的话,使用图片绝对路径
+		FileUploadResponse fileUploadResponse = uploadFile(file, userLogon.getLoginToken(), ".png");
+		LOGGER.info("testUploadFile, fileUploadResponse = {}", fileUploadResponse);
 	}
 
 	/**
 	 * 上传图片到contentserver
+	 * @param file
+	 * @param loginToken
+	 * @param fileExt
 	 */
-	private void uploadFile() {
-		//
+	private FileUploadResponse uploadFile(File file, String loginToken, String fileExt) {
+		try {
+			//建立HttpPost对象
+			HttpPost httpPost = new HttpPost(TransferConstants.UPLOAD_FILE_URL + "?token=" + loginToken);
+			MultipartEntity reqEntity = new MultipartEntity();
+			reqEntity.addPart("upload_file", new FileBody(file));
+			httpPost.setEntity(reqEntity);
+			//发送Post,并返回一个HttpResponse对象
+			HttpResponse response= null;
+			response = HttpUtils.getHttpClient().execute(httpPost);
+			if(response.getStatusLine().getStatusCode()==200) {
+				//如果状态码为200,就是正常返回
+				String result = EntityUtils.toString(response.getEntity());
+				System.out.print(result);
+				return  (FileUploadResponse) RestPostUtils.parseResponseToPojo(result, FileUploadResponse.class);
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	/**
+	 * 获取上传文件的请求MIME类型
+	 */
+	private String getContentType(String fileExt) {
+		return ContentTypeEnum.fromCode(fileExt).getContentType();
 	}
 
 	/**
 	 * 上传图片到contentserver
 	 */
 	private void uploadPic(String loginToken, File file) {
-		CloseableHttpClient httpClient = HttpClients.createDefault();
 		//建立HttpPost对象,改成自己的地址
 		HttpPost httpPost = new HttpPost(TransferConstants.UPLOAD_PICTURE_URL + "?token=" + loginToken);
 		//判断文件是否存在
@@ -147,7 +179,7 @@ public class TransferServiceImpl implements TransferService {
 		//发送Post,并返回一个HttpResponse对象
 		HttpResponse response= null;
 		try {
-			response = httpClient.execute(httpPost);
+			response = HttpUtils.getHttpClient().execute(httpPost);
 			LOGGER.info("response = "+ response);
 			if(response.getStatusLine().getStatusCode()==200) {
 				//如果状态码为200,就是正常返回
@@ -214,7 +246,7 @@ public class TransferServiceImpl implements TransferService {
 			// 3.迁移attachments至帮助中心附件表
 			List<MindocAttachments> mindocAttachments = mdAttachmentsProvider.listAttachmentsByBookId(book.getBookId());
 			if (!CollectionUtils.isEmpty(mindocAttachments)){
-				List<HelpCenterAttachments> helpCenterAttachments = batchBuildHelpCenterAttachments(mindocAttachments, folder.getId());
+				List<HelpCenterAttachments> helpCenterAttachments = batchBuildHelpCenterAttachments(mindocAttachments, folder.getId(), userLogon.getLoginToken());
 				helpCenterAttachmentProvider.batchCreateAttachments(helpCenterAttachments);
 			}
 		}
@@ -226,9 +258,9 @@ public class TransferServiceImpl implements TransferService {
 	/**
 	 * <p>批量构造帮助中心的附件</p>
 	 */
-	private List<HelpCenterAttachments> batchBuildHelpCenterAttachments(List<MindocAttachments> mindocAttachments, Long folderId) {
+	private List<HelpCenterAttachments> batchBuildHelpCenterAttachments(List<MindocAttachments> mindocAttachments, Long folderId, String loginToken) {
 		if (!CollectionUtils.isEmpty(mindocAttachments)){
-			mindocAttachments.stream().map(mindocAttachment -> convertToHelpCenterAttachments(mindocAttachment, folderId)).collect(Collectors.toList());
+			mindocAttachments.stream().map(mindocAttachment -> convertToHelpCenterAttachments(mindocAttachment, folderId, loginToken)).collect(Collectors.toList());
 		}
 		return Collections.emptyList();
 	}
@@ -236,20 +268,24 @@ public class TransferServiceImpl implements TransferService {
 	/**
 	 * <p>构造帮助中心附件</p>
 	 */
-	private HelpCenterAttachments convertToHelpCenterAttachments(MindocAttachments mindocAttachment, Long folderId) {
+	private HelpCenterAttachments convertToHelpCenterAttachments(MindocAttachments mindocAttachment, Long folderId, String loginToken) {
 		HelpCenterAttachments helpCenterAttachment = ConvertHelper.convert(mindocAttachment, HelpCenterAttachments.class);
 		helpCenterAttachment.setId(IdFactory.getNextId(TableName.ATTACHMENT.getName()).intValue());
 		helpCenterAttachment.setFolderStructureId(folderId);
 		helpCenterAttachment.setFileStructureId(null);
-		helpCenterAttachment.setFileUrl(getCSFileUrl(mindocAttachment));
+		helpCenterAttachment.setFileUrl(getCSFileUrl(mindocAttachment, loginToken));
 		return helpCenterAttachment;
 	}
 
 	/**
 	 * <p>上传并返回文件服务器URL</p>
 	 */
-	private String getCSFileUrl(MindocAttachments mindocAttachment) {
-
+	private String getCSFileUrl(MindocAttachments mindocAttachment, String loginToken) {
+		File file = new File(TransferConstants.DEFAULT_TRANSFER_ATTACHMENT_PATH + mindocAttachment.getFilePath());
+		FileUploadResponse fileUploadResponse = uploadFile(file, loginToken, mindocAttachment.getFileExt());
+		if (!ObjectUtils.isEmpty(fileUploadResponse)){
+			return fileUploadResponse.getUrl();
+		}
 		return null;
 	}
 
