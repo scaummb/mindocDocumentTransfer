@@ -45,6 +45,12 @@ public class MindocTransferController {
 		transferService.testGogs();
 	}
 
+	@RequestMapping("deleteGogs")
+	@ResponseBody
+	public void deleteGogs(DeleteGogsFileCommand command){
+		transferService.deleteGogs(command);
+	}
+
 	@RequestMapping("testUploadPic")
 	@ResponseBody
 	public void testUploadPic(){

@@ -1,5 +1,6 @@
 package com.example.mindoc_transfer.core.service;
 
+import com.example.mindoc_transfer.core.controller.DeleteGogsFileCommand;
 import com.example.mindoc_transfer.core.controller.TransferBookCommand;
 import com.example.mindoc_transfer.core.controller.TransferCommand;
 import com.example.mindoc_transfer.core.controller.TransferResponse;
@@ -20,6 +21,8 @@ public interface TransferService {
 	void testUploadFile();
 
 	void testGogs();
+
+	void deleteGogs(DeleteGogsFileCommand command);
 
 	void testDB();
 

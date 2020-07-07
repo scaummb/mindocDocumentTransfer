@@ -17,10 +17,7 @@ import com.example.mindoc_transfer.core.constants.business.DraftFlag;
 import com.example.mindoc_transfer.core.constants.business.ErrorCodes;
 import com.example.mindoc_transfer.core.constants.business.FileType;
 import com.example.mindoc_transfer.core.constants.business.HelpCenterFixType;
-import com.example.mindoc_transfer.core.controller.FileUploadResponse;
-import com.example.mindoc_transfer.core.controller.TransferBookCommand;
-import com.example.mindoc_transfer.core.controller.TransferCommand;
-import com.example.mindoc_transfer.core.controller.TransferResponse;
+import com.example.mindoc_transfer.core.controller.*;
 import com.example.mindoc_transfer.core.provider.*;
 import com.example.mindoc_transfer.core.utils.HttpUtils;
 import com.example.mindoc_transfer.core.utils.IdFactory;
@@ -205,6 +202,19 @@ public class TransferServiceImpl implements TransferService {
 			throwHelpCenterInnerError(null,"This file is not exist in gogs! " + e.toString());
 		} catch (Exception e){
 			throwHelpCenterInnerError(null,"Create document exception! " + e.toString());
+		}
+	}
+
+	@Override
+	public void deleteGogs(DeleteGogsFileCommand command) {
+		if (StringUtils.isNotBlank(command.getPathIds())){
+			String[] pathIds = command.getPathIds().split(",");
+			GogsRepo repo = gogsRepo(TransferConstants.DEFAULT_NAMESPACE_ID, TransferConstants.DEFAULT_DOCUMENT_GOGS_MODULE_TYPE, TransferConstants.DEFAULT_MODULE_ID, TransferConstants. DEFAULT_DOCUMENT_GOGS_OWNER_TYPE, TransferConstants.DEFAULT_DOCUMENT_GOGS_OWNER_ID);
+			Arrays.stream(pathIds).forEach(
+					pathId -> {
+						gogsService.deleteFile(repo, TransferConstants.DEFAULT_PARENT_PATH + pathId, null);
+					}
+			);
 		}
 	}
 

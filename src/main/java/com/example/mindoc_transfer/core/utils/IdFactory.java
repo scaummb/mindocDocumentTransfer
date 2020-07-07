@@ -19,8 +19,8 @@ public class IdFactory {
 	private String fileId;
 	@Value("${helpcenter.attachment.id.base}")
 	private String attachmentId;
-	private static Long folderIdIndex = 1010L;
-	private static Long fileIdIndex = 1010L;
+	private static Long folderIdIndex = 2510L;
+	private static Long fileIdIndex = 2510L;
 	private static Long attachmentIdIndex = 0L;
 
 	public String getFolderId() {

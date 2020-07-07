@@ -54,4 +54,5 @@ public class TransferConstants {
 	public static final String DEFAULT_TRANSFER_ATTACHMENT_PATH = "I:\\mindoc_windows_amd64";
 	/** 默认文档内容 **/
 	public final static String DEFAULT_DOCUMENT_DEFAULT_CONTENT = "   ";
+	public static final String DEFAULT_PARENT_PATH = "0/";
 }
