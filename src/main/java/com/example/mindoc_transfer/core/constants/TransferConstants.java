@@ -24,7 +24,7 @@ public class TransferConstants {
 	/** 默认文档分类ID **/
 	public final static Long DEFAULT_CATEGORY_ID = 0l;
 	/** 默认路径 **/
-	public final static String DEFAULT_PATH = "/0";
+	public final static String DEFAULT_HELP_CENTER_DOCUMENT_PATH = "0";
 	/** 默认文档父节点ID **/
 	public final static Integer DEFAULT_PARENT_ID = 0;
 	/** 默认域空间ID **/
@@ -52,4 +52,6 @@ public class TransferConstants {
 	public static final Integer DEFAULT_LEVEL = 1;
 	// 迁移数据绝对路径
 	public static final String DEFAULT_TRANSFER_ATTACHMENT_PATH = "I:\\mindoc_windows_amd64";
+	/** 默认文档内容 **/
+	public final static String DEFAULT_DOCUMENT_DEFAULT_CONTENT = "   ";
 }

@@ -19,8 +19,8 @@ public class IdFactory {
 	private String fileId;
 	@Value("${helpcenter.attachment.id.base}")
 	private String attachmentId;
-	private static Long folderIdIndex = 1000L;
-	private static Long fileIdIndex = 1000L;
+	private static Long folderIdIndex = 1010L;
+	private static Long fileIdIndex = 1010L;
 	private static Long attachmentIdIndex = 0L;
 
 	public String getFolderId() {
@@ -46,9 +46,9 @@ public class IdFactory {
 	}};
 
 	public final static Long getNextId(String tableName){
-		if (ObjectUtils.isEmpty(TableName.fromCode(tableName))){
+		if (!ObjectUtils.isEmpty(TableName.fromCode(tableName))){
 			Long id = idMap.get(tableName);
-			idMap.putIfAbsent(tableName, id+1);
+			idMap.put(tableName, id+1);
 			return id;
 		}
 		return 0L;

@@ -13,7 +13,7 @@ public interface TransferService {
 
 	TransferResponse batchTransfer(TransferCommand command);
 
-	TransferResponse transferBook(TransferBookCommand command);
+	Boolean transferBook(TransferBookCommand command);
 
 	void testUploadPic();
 

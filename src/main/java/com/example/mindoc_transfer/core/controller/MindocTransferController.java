@@ -29,7 +29,7 @@ public class MindocTransferController {
 
 	@RequestMapping("transferBook")
 	@ResponseBody
-	public TransferResponse transferBook(@Valid TransferBookCommand command){
+	public Boolean transferBook(@Valid TransferBookCommand command){
 		return transferService.transferBook(command);
 	}
 
