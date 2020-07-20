@@ -36,11 +36,10 @@ public class TransferConstants {
 	// 登陆地址
 	public final static String LOGON_URL = "http://gonggdev2.zuolin.com/evh/user/logon";
 
-	// 现网图片服务器：content-1.zuolin.com
 	// 文件服务器地址
-	public final static String UPLOAD_FILE_URL = "http://beta-cs.zuolin.com/upload/file";
+	public final static String UPLOAD_FILE_URL = "http://content-1.zuolin.com/upload/file";
 	// 文件服务器地址
-	public final static String UPLOAD_PICTURE_URL = "http://beta-cs.zuolin.com/upload/image";
+	public final static String UPLOAD_PICTURE_URL = "http://content-1.zuolin.com/upload/image";
 
 	/** 默认仓库文件后缀名 **/
 	public final static String DEFAULT_FILE_SUFFIX = ".txt";
