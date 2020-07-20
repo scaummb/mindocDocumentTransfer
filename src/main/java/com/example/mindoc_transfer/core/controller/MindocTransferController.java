@@ -68,4 +68,12 @@ public class MindocTransferController {
 	public void testUploadFile(){
 		transferService.testUploadFile();
 	}
+
+	@RequestMapping("testRemoteFile")
+	@ResponseBody
+	public void testRemoteFile(){
+		transferService.testRemoteFile();
+	}
+
+
 }

@@ -30,11 +30,11 @@ public class TransferConstants {
 	/** 默认域空间ID **/
 	public final static Integer DEFAULT_NAMESPACE_ID = 0;
 
-	public final static String IDENTIFY = "15900000005";
+	public final static String IDENTIFY = "12000001802";
 	public final static String PASSWORD = "6ca13d52ca70c883e0f0bb101e425a89e8624de51db2d2392593af6a84118090";
 	public final static String REGION = "86";
 	// 登陆地址
-	public final static String LOGON_URL = "http://opc-test59.zuolin.com/opc/user/logon";
+	public final static String LOGON_URL = "http://gonggdev2.zuolin.com/evh/user/logon";
 	// 文件服务器地址
 	public final static String UPLOAD_FILE_URL = "http://beta-cs.zuolin.com/upload/file";
 	// 文件服务器地址
@@ -51,7 +51,8 @@ public class TransferConstants {
 	public static final Integer SORT_NUM = 1;
 	public static final Integer DEFAULT_LEVEL = 1;
 	// 迁移数据绝对路径
-	public static final String DEFAULT_TRANSFER_ATTACHMENT_PATH = "I:\\mindoc_windows_amd64";
+	public static final String DEFAULT_TRANSFER_ATTACHMENT_PATH = "/data1/mindoc/";
+	public static final String TEST_TRANSFER_ATTACHMENT_PATH = "/data1/mindoc/";
 	/** 默认文档内容 **/
 	public final static String DEFAULT_DOCUMENT_DEFAULT_CONTENT = "   ";
 	public static final String DEFAULT_PARENT_PATH = "0/";

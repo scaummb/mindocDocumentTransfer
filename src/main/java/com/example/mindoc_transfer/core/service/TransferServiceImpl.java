@@ -86,7 +86,7 @@ public class TransferServiceImpl implements TransferService {
 
 	@Override
 	public TransferResponse batchTransfer(TransferCommand command) {
-		if (StringUtils.isBlank(command.getBookIds())){
+		if (StringUtils.isBlank(command.getBookIds())) {
 			LOGGER.error("bookIds is blank!!");
 			System.exit(0);
 		}
@@ -116,6 +116,7 @@ public class TransferServiceImpl implements TransferService {
 
 	/**
 	 * 上传图片到contentserver
+	 *
 	 * @param file
 	 * @param loginToken
 	 */
@@ -127,14 +128,14 @@ public class TransferServiceImpl implements TransferService {
 			reqEntity.addPart("upload_file", new FileBody(file));
 			httpPost.setEntity(reqEntity);
 			//发送Post,并返回一个HttpResponse对象
-			HttpResponse response= null;
+			HttpResponse response = null;
 			response = HttpUtils.getHttpClient().execute(httpPost);
-			if(response.getStatusLine().getStatusCode()==200) {
+			if (response.getStatusLine().getStatusCode() == 200) {
 				//如果状态码为200,就是正常返回
 				String result = EntityUtils.toString(response.getEntity());
 				System.out.print(result);
 				LOGGER.info("upload file success, file = {}", file);
-				return  (FileUploadResponse) RestPostUtils.parseResponseToPojo(result, FileUploadResponse.class);
+				return (FileUploadResponse) RestPostUtils.parseResponseToPojo(result, FileUploadResponse.class);
 			}
 
 		} catch (IOException e) {
@@ -158,7 +159,7 @@ public class TransferServiceImpl implements TransferService {
 		//建立HttpPost对象,改成自己的地址
 		HttpPost httpPost = new HttpPost(TransferConstants.UPLOAD_PICTURE_URL + "?token=" + loginToken);
 		//判断文件是否存在
-		if(!file.exists()){
+		if (!file.exists()) {
 			LOGGER.error("file not exists, file = {}", file);
 			return null;
 		}
@@ -172,11 +173,11 @@ public class TransferServiceImpl implements TransferService {
 				.build();
 		httpPost.setEntity(entity);
 		//发送Post,并返回一个HttpResponse对象
-		HttpResponse response= null;
+		HttpResponse response = null;
 		try {
 			response = HttpUtils.getHttpClient().execute(httpPost);
-			LOGGER.info("response = "+ response);
-			if(response.getStatusLine().getStatusCode()==200) {
+			LOGGER.info("response = " + response);
+			if (response.getStatusLine().getStatusCode() == 200) {
 				//如果状态码为200,就是正常返回
 				String result = EntityUtils.toString(response.getEntity());
 				System.out.print(result);
@@ -193,23 +194,23 @@ public class TransferServiceImpl implements TransferService {
 	public void testGogs() {
 		try {
 			// 1.gogs存储帮助文档与提交脚本
-			GogsRepo repo = gogsRepo(TransferConstants.DEFAULT_NAMESPACE_ID, TransferConstants.DEFAULT_DOCUMENT_GOGS_MODULE_TYPE, TransferConstants.DEFAULT_MODULE_ID, TransferConstants. DEFAULT_DOCUMENT_GOGS_OWNER_TYPE, TransferConstants.DEFAULT_DOCUMENT_GOGS_OWNER_ID);
+			GogsRepo repo = gogsRepo(TransferConstants.DEFAULT_NAMESPACE_ID, TransferConstants.DEFAULT_DOCUMENT_GOGS_MODULE_TYPE, TransferConstants.DEFAULT_MODULE_ID, TransferConstants.DEFAULT_DOCUMENT_GOGS_OWNER_TYPE, TransferConstants.DEFAULT_DOCUMENT_GOGS_OWNER_ID);
 			GogsCommit commit = gogsCommitScript(repo, "0", "", "test", true);
 			LOGGER.info("commit = {}", commit);
 		} catch (GogsConflictException e) {
-			throwHelpCenterInnerError(null,"This file already exists in gogs! " + e.toString());
+			throwHelpCenterInnerError(null, "This file already exists in gogs! " + e.toString());
 		} catch (GogsNotExistException e) {
-			throwHelpCenterInnerError(null,"This file is not exist in gogs! " + e.toString());
-		} catch (Exception e){
-			throwHelpCenterInnerError(null,"Create document exception! " + e.toString());
+			throwHelpCenterInnerError(null, "This file is not exist in gogs! " + e.toString());
+		} catch (Exception e) {
+			throwHelpCenterInnerError(null, "Create document exception! " + e.toString());
 		}
 	}
 
 	@Override
 	public void deleteGogs(DeleteGogsFileCommand command) {
-		if (StringUtils.isNotBlank(command.getPathIds())){
+		if (StringUtils.isNotBlank(command.getPathIds())) {
 			String[] pathIds = command.getPathIds().split(",");
-			GogsRepo repo = gogsRepo(TransferConstants.DEFAULT_NAMESPACE_ID, TransferConstants.DEFAULT_DOCUMENT_GOGS_MODULE_TYPE, TransferConstants.DEFAULT_MODULE_ID, TransferConstants. DEFAULT_DOCUMENT_GOGS_OWNER_TYPE, TransferConstants.DEFAULT_DOCUMENT_GOGS_OWNER_ID);
+			GogsRepo repo = gogsRepo(TransferConstants.DEFAULT_NAMESPACE_ID, TransferConstants.DEFAULT_DOCUMENT_GOGS_MODULE_TYPE, TransferConstants.DEFAULT_MODULE_ID, TransferConstants.DEFAULT_DOCUMENT_GOGS_OWNER_TYPE, TransferConstants.DEFAULT_DOCUMENT_GOGS_OWNER_ID);
 			Arrays.stream(pathIds).forEach(
 					pathId -> {
 						gogsService.deleteFile(repo, TransferConstants.DEFAULT_PARENT_PATH + pathId, null);
@@ -225,6 +226,17 @@ public class TransferServiceImpl implements TransferService {
 	}
 
 	@Override
+	public void testRemoteFile() {
+		String path = TransferConstants.TEST_TRANSFER_ATTACHMENT_PATH + "aa.txt";
+		File file = new File(path);
+		if (file.exists()) {
+			LOGGER.info("file path = {}", file.getAbsolutePath());
+		} else {
+			LOGGER.error("file is not exits!! path = {}", path);
+		}
+	}
+
+	@Override
 	public Boolean transferBook(TransferBookCommand command) {
 		UserLogon userLogon = userService.logon(TransferConstants.IDENTIFY, TransferConstants.PASSWORD);
 
@@ -235,11 +247,11 @@ public class TransferServiceImpl implements TransferService {
 			helpCenterFolderProvider.createFolder(TransferConstants.DEFAULT_HELP_CENTER_DOCUMENT_PATH, folder);
 			LOGGER.info("transfer book to folder success, book = {}, folder = {}", book, folder);
 
-			if (!ObjectUtils.isEmpty(book)){
+			if (!ObjectUtils.isEmpty(book)) {
 				// 2.迁移documents至files
 				List<MindocDocuments> documents = mdDocumentProvider.listDocumentsByParentIdAndBookId(book.getBookId(), TransferConstants.DEFAULT_PARENT_ID);
 
-				if (CollectionUtils.isEmpty(documents)){
+				if (CollectionUtils.isEmpty(documents)) {
 					LOGGER.info("transferBook, documents is null, book = {}", book);
 					return true;
 				}
@@ -251,27 +263,27 @@ public class TransferServiceImpl implements TransferService {
 
 				// 发现mindoc的下节点数据
 				List<MindocDocuments> subMindocDocuments = mdDocumentProvider.listDocumentsByParentIdAndBookId(book.getBookId(), rootMindocDocument.getDocumentId());
-				if (!CollectionUtils.isEmpty(subMindocDocuments)){
-					for (MindocDocuments subMindocDocument : subMindocDocuments){
+				if (!CollectionUtils.isEmpty(subMindocDocuments)) {
+					for (MindocDocuments subMindocDocument : subMindocDocuments) {
 
 						// 递归迁移mindoc余下节点数据
 						HelpCenterDocument subDocument = buildHelpCenterDocument(subMindocDocument, folder.getId());
 						buildAndCreateDocumentWithNewParentIdAndPath(rootDocument.getPath(), rootDocument.getId(), subDocument, subMindocDocument.getMarkdown(), userLogon.getLoginToken());
 						LOGGER.info("transfer subMindocDocument to document success, subMindocDocument = {}, subDocument = {} ", rootMindocDocument, rootDocument);
 
-						transferSubMindocDocument(book.getBookId(), subMindocDocument.getDocumentId(), subDocument.getFolderStructureId(),subDocument.getPath(),subDocument.getId(), userLogon.getLoginToken());
+						transferSubMindocDocument(book.getBookId(), subMindocDocument.getDocumentId(), subDocument.getFolderStructureId(), subDocument.getPath(), subDocument.getId(), userLogon.getLoginToken());
 					}
 				}
 
 				// 3.迁移attachments至帮助中心附件表
 				List<MindocAttachments> mindocAttachments = mdAttachmentsProvider.listAttachmentsByBookId(book.getBookId());
-				if (!CollectionUtils.isEmpty(mindocAttachments)){
+				if (!CollectionUtils.isEmpty(mindocAttachments)) {
 					List<HelpCenterAttachments> helpCenterAttachments = batchBuildHelpCenterAttachments(mindocAttachments, folder.getId(), userLogon.getLoginToken());
 					helpCenterAttachmentProvider.batchCreateAttachments(helpCenterAttachments);
 					LOGGER.info("transfer mindocAttachments to helpcenter documents success, mindocAttachments = {}, helpCenterAttachments = {} ", mindocAttachments, helpCenterAttachments);
 				}
 			}
-		} catch (Exception ex){
+		} catch (Exception ex) {
 			LOGGER.error("transferBook error, bookId = {} ,", command.getBookId(), ex);
 			return false;
 		}
@@ -283,7 +295,7 @@ public class TransferServiceImpl implements TransferService {
 	 * <p>批量构造帮助中心的附件</p>
 	 */
 	private List<HelpCenterAttachments> batchBuildHelpCenterAttachments(List<MindocAttachments> mindocAttachments, Long folderId, String loginToken) {
-		if (!CollectionUtils.isEmpty(mindocAttachments)){
+		if (!CollectionUtils.isEmpty(mindocAttachments)) {
 			LOGGER.info("mindoc document with {} attachments = {}", mindocAttachments.size(), mindocAttachments);
 			mindocAttachments.stream().map(mindocAttachment -> convertToHelpCenterAttachments(mindocAttachment, folderId, loginToken)).collect(Collectors.toList());
 		}
@@ -308,7 +320,7 @@ public class TransferServiceImpl implements TransferService {
 	private String getCSFileUrl(MindocAttachments mindocAttachment, String loginToken) {
 		File file = new File(TransferConstants.DEFAULT_TRANSFER_ATTACHMENT_PATH + mindocAttachment.getFilePath());
 		FileUploadResponse fileUploadResponse = uploadFile(file, loginToken);
-		if (!ObjectUtils.isEmpty(fileUploadResponse)){
+		if (!ObjectUtils.isEmpty(fileUploadResponse)) {
 			return fileUploadResponse.getUrl();
 		}
 		return null;
@@ -319,8 +331,8 @@ public class TransferServiceImpl implements TransferService {
 	 */
 	private void transferSubMindocDocument(Integer mindocBookId, Integer mindocParantDocumentId, Long folderStructureId, String parentHelpcenterDocumentPath, Long parentHelpcenterDocumentId, String loginToken) {
 		List<MindocDocuments> subMindocDocuments = mdDocumentProvider.listDocumentsByParentIdAndBookId(mindocBookId, mindocParantDocumentId);
-		if (!CollectionUtils.isEmpty(subMindocDocuments)){
-			for (MindocDocuments subMindocDocument : subMindocDocuments){
+		if (!CollectionUtils.isEmpty(subMindocDocuments)) {
+			for (MindocDocuments subMindocDocument : subMindocDocuments) {
 				// 迁移mindoc节点数据
 				HelpCenterDocument subDocument = buildHelpCenterDocument(subMindocDocument, folderStructureId);
 				buildAndCreateDocumentWithNewParentIdAndPath(parentHelpcenterDocumentPath, parentHelpcenterDocumentId, subDocument, subMindocDocument.getMarkdown(), loginToken);
@@ -369,7 +381,7 @@ public class TransferServiceImpl implements TransferService {
 	private Exception throwHelpCenterInnerError(String obj, String description) {
 		LOGGER.error("throwHelpCenterInnerError : obj = {}, description = {}", obj, description);
 		throw RuntimeErrorException.errorWith(ErrorCodes.SCOPE_GENERAL, ErrorCodes.ERROR_GENERAL_EXCEPTION,
-				obj + " : "+ description);
+				obj + " : " + description);
 	}
 
 	/**
@@ -378,14 +390,15 @@ public class TransferServiceImpl implements TransferService {
 	private TransferResponse batchTransferBooks(UserLogon userLogon, List<Integer> mindocBooks) {
 		List<Integer> successBooks = new ArrayList<>();
 		List<Integer> failBooks = new ArrayList<>();
+		LOGGER.info("pre batchTransferBooks, userLogon = {}", userLogon);
 
 		//遍历books
-		if (!CollectionUtils.isEmpty(mindocBooks)){
+		if (!CollectionUtils.isEmpty(mindocBooks)) {
 			for (Integer bookId : mindocBooks) {
 				TransferBookCommand command = new TransferBookCommand();
 				command.setBookId(bookId.toString());
 				Boolean result = transferBook(command);
-				if (result){
+				if (result) {
 					successBooks.add(bookId);
 				} else {
 					failBooks.add(bookId);
@@ -407,12 +420,12 @@ public class TransferServiceImpl implements TransferService {
 		helpCenterDocument.setId(id);
 		helpCenterDocument.setPath(parentPath.concat("/").concat(id.toString()));
 		helpCenterDocument.setParentId(parentId);
-		try{
-			GogsRepo repo = gogsRepo(TransferConstants.DEFAULT_NAMESPACE_ID, TransferConstants.DEFAULT_DOCUMENT_GOGS_MODULE_TYPE, TransferConstants.DEFAULT_MODULE_ID, TransferConstants. DEFAULT_DOCUMENT_GOGS_OWNER_TYPE, TransferConstants.DEFAULT_DOCUMENT_GOGS_OWNER_ID);
+		try {
+			GogsRepo repo = gogsRepo(TransferConstants.DEFAULT_NAMESPACE_ID, TransferConstants.DEFAULT_DOCUMENT_GOGS_MODULE_TYPE, TransferConstants.DEFAULT_MODULE_ID, TransferConstants.DEFAULT_DOCUMENT_GOGS_OWNER_TYPE, TransferConstants.DEFAULT_DOCUMENT_GOGS_OWNER_ID);
 			String markDownContent = handleMindocMarkDownContent(markdown, loginToken);
 			GogsCommit commit = gogsCommitScript(repo, helpCenterDocument.getPath(), "", markDownContent, true);
 			helpCenterDocument.setLastCommit(commit.getId());
-		} catch (Exception e){
+		} catch (Exception e) {
 			throwHelpCenterInnerError(
 					String.format("id=%s,parentId=%s,folderStructureId=%s", helpCenterDocument.getId(), helpCenterDocument.getParentId(), helpCenterDocument.getFolderStructureId()),
 					"Create document content error, gogs报错: " + e.toString());
@@ -424,7 +437,7 @@ public class TransferServiceImpl implements TransferService {
 	 * <p>处理mindoc的markdown语法文本，匹配图片路径并上传到contentserver</p>
 	 */
 	private String handleMindocMarkDownContent(String markdown, String loginToken) {
-		if (StringUtils.isNotBlank(markdown)){
+		if (StringUtils.isNotBlank(markdown)) {
 			Pattern p = Pattern.compile(TransferConstants.PICTURE_FILTER_REGEX);
 			Matcher m = p.matcher(markdown);
 			ArrayList<String> keywordList = new ArrayList();
@@ -445,10 +458,10 @@ public class TransferServiceImpl implements TransferService {
 	/**
 	 * <p>全文本替换所有的关键字</p>
 	 */
-	private String replaceAllKeyWord(String markdown, HashMap<String,String> keywordToContentServerUrlMap) {
-		if (!CollectionUtils.isEmpty(keywordToContentServerUrlMap)){
+	private String replaceAllKeyWord(String markdown, HashMap<String, String> keywordToContentServerUrlMap) {
+		if (!CollectionUtils.isEmpty(keywordToContentServerUrlMap)) {
 			Iterator<String> iterator = keywordToContentServerUrlMap.keySet().iterator();
-			while (iterator.hasNext()){
+			while (iterator.hasNext()) {
 				String keyword = iterator.next();
 				markdown = markdown.replaceAll(handleKey(keyword), handleValue(keywordToContentServerUrlMap.get(keyword)));
 			}
@@ -458,11 +471,11 @@ public class TransferServiceImpl implements TransferService {
 
 	/**
 	 * <p>
-	 *     文本图片迁移:key=mindoc原图片地址，value=ContentServer地址
+	 * 文本图片迁移:key=mindoc原图片地址，value=ContentServer地址
 	 * </p>
 	 */
-	private HashMap<String,String> handleKeyWordList(ArrayList<String> keywordList, String loginToken) {
-		if (CollectionUtils.isEmpty(keywordList)){
+	private HashMap<String, String> handleKeyWordList(ArrayList<String> keywordList, String loginToken) {
+		if (CollectionUtils.isEmpty(keywordList)) {
 			return new HashMap<>();
 		}
 
@@ -483,12 +496,12 @@ public class TransferServiceImpl implements TransferService {
 	 */
 	private String getTransferCSUrl(String keyword, String loginToken) throws URISyntaxException {
 		// 图片链接配置了域名
-		if (keyword.startsWith("http://s.a.com/") || keyword.startsWith("http://serverdoc.lab.everhomes.com/")){
+		if (keyword.startsWith("http://s.a.com/") || keyword.startsWith("http://doc.lab.everhomes.com/")) {
 			File file = null;//相对路径使用不了的话,使用图片绝对路径
 			try {
 				file = new File(new URL(keyword).toURI());
 				FileUploadResponse fileUploadResponse = uploadPic(loginToken, file);
-				if (!ObjectUtils.isEmpty(fileUploadResponse)){
+				if (!ObjectUtils.isEmpty(fileUploadResponse)) {
 					return fileUploadResponse.getUrl();
 				}
 			} catch (Exception e) {
@@ -496,10 +509,10 @@ public class TransferServiceImpl implements TransferService {
 			}
 		} else {
 			//相对路径使用不了的话,使用图片绝对路径,为了方便已经提前将全部附件导出到本地
-			File file = new File(TransferConstants.DEFAULT_TRANSFER_ATTACHMENT_PATH + keyword.substring(4, keyword.length()-1));
+			File file = new File(TransferConstants.DEFAULT_TRANSFER_ATTACHMENT_PATH + keyword.substring(4, keyword.length() - 1));
 			try {
 				FileUploadResponse fileUploadResponse = uploadPic(loginToken, file);
-				if (!ObjectUtils.isEmpty(fileUploadResponse)){
+				if (!ObjectUtils.isEmpty(fileUploadResponse)) {
 					return fileUploadResponse.getUrl();
 				}
 			} catch (Exception e) {
@@ -522,7 +535,7 @@ public class TransferServiceImpl implements TransferService {
 			// 建立实际的连接
 			connection.connect();
 		} catch (IOException e) {
-			LOGGER.error("msg",e);
+			LOGGER.error("msg", e);
 			e.printStackTrace();
 		}
 		return connection;
@@ -532,12 +545,12 @@ public class TransferServiceImpl implements TransferService {
 	 * <p>处理文本key值</p>
 	 */
 	private static String handleKey(String key) {
-		key = key.replaceAll("\\!","\\\\\\!");
-		key = key.replaceAll("\\[","\\\\\\[");
-		key = key.replaceAll("\\]","\\\\\\]");
-		key = key.replaceAll("\\(","\\\\\\(");
-		key = key.replaceAll("\\/","\\\\\\/");
-		key = key.replaceAll("\\)","\\\\\\)");
+		key = key.replaceAll("\\!", "\\\\\\!");
+		key = key.replaceAll("\\[", "\\\\\\[");
+		key = key.replaceAll("\\]", "\\\\\\]");
+		key = key.replaceAll("\\(", "\\\\\\(");
+		key = key.replaceAll("\\/", "\\\\\\/");
+		key = key.replaceAll("\\)", "\\\\\\)");
 		return key;
 	}
 
@@ -547,11 +560,12 @@ public class TransferServiceImpl implements TransferService {
 	private String handleValue(String value) {
 		return "![](" + value + ")";
 	}
+
 	/**
 	 * <p>迁移附件</p>
 	 */
 	private void transferAttachments(List<MindocAttachments> bookAttachments) {
-		if (!CollectionUtils.isEmpty(bookAttachments)){
+		if (!CollectionUtils.isEmpty(bookAttachments)) {
 			bookAttachments.stream().map(r -> convertToHelpcenterAttachment(r)).collect(Collectors.toList());
 
 
@@ -566,6 +580,7 @@ public class TransferServiceImpl implements TransferService {
 
 	/**
 	 * <p>获取仓库</p>
+	 *
 	 * @param namespaceId
 	 * @param ownerId
 	 * @param ownerType
@@ -590,6 +605,7 @@ public class TransferServiceImpl implements TransferService {
 
 	/**
 	 * <p>获取仓库文本</p>
+	 *
 	 * @param repo
 	 * @param path
 	 * @param lastCommit
@@ -602,6 +618,7 @@ public class TransferServiceImpl implements TransferService {
 
 	/**
 	 * <p>提交文档到仓库</p>
+	 *
 	 * @param repo
 	 * @param path
 	 * @param lastCommit
@@ -624,6 +641,7 @@ public class TransferServiceImpl implements TransferService {
 	private String handlePath(String path) {
 		return path + TransferConstants.DEFAULT_FILE_SUFFIX;
 	}
+
 	/**
 	 * <p>设置提交用户信息</p>
 	 */

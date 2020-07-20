@@ -26,4 +26,6 @@ public interface TransferService {
 
 	void testDB();
 
+	void testRemoteFile();
+
 }
