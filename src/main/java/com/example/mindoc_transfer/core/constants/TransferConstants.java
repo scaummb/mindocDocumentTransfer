@@ -38,8 +38,10 @@ public class TransferConstants {
 
 	// 文件服务器地址
 	public final static String UPLOAD_FILE_URL = "http://content-1.zuolin.com/upload/file";
+//	public final static String UPLOAD_FILE_URL = "http://beta-cs.zuolin.com/upload/file";;
 	// 文件服务器地址
 	public final static String UPLOAD_PICTURE_URL = "http://content-1.zuolin.com/upload/image";
+//	public final static String UPLOAD_PICTURE_URL = "http://beta-cs.zuolin.com/upload/image";
 
 	/** 默认仓库文件后缀名 **/
 	public final static String DEFAULT_FILE_SUFFIX = ".txt";
@@ -52,6 +54,9 @@ public class TransferConstants {
 	public static final Integer SORT_NUM = 1;
 	public static final Integer DEFAULT_LEVEL = 1;
 	// 迁移数据绝对路径
+//	public static final String TEST_TRANSFER_ATTACHMENT_PATH = "I:\\mindoc_windows_amd64";
+//	public static final String DEFAULT_TRANSFER_ATTACHMENT_PATH = "I:\\mindoc_windows_amd64";
+	//虚拟机环境
 	public static final String DEFAULT_TRANSFER_ATTACHMENT_PATH = "/data1/mindoc/";
 	public static final String TEST_TRANSFER_ATTACHMENT_PATH = "/data1/mindoc/";
 	/** 默认文档内容 **/
